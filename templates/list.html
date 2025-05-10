@@ -1,0 +1,56 @@
+<!-- 
+    语录列表模板
+    - author: 语录作者
+    - description: 语录信息描述
+    - addition: 附加信息
+    - sections: 分页语录列表
+        - title: 分页标题
+        - color: 分页颜色
+        - boxes: 该页语录列表
+            - quote: 语录内容
+            - reason: 语录添加原因/评论
+-->
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>来自{{ author }}的语录</title>
+    <link rel="stylesheet" href="list.css">
+</head>
+<body>
+    <div class="page-container">
+        <header class="page-header">
+            <h1>来自{{ author }}的语录</h1>
+            <span class="version">{{ description }}</span>
+            <p class="description">{{ addition }}</p>
+        </header>
+
+        <main class="main-content">
+
+            {% for section in sections %}
+            <section class="card">
+                <h2 class="card-title" style="background-color: {{ section.color }}">{{ section.title }}</h2>
+                <div class="card-content">
+
+                    {% for box in section.boxes %}
+                    <div class="content-box">
+                        <h3 class="box-title">{{ box.quote }}</h3>
+                        <p class="box-description">{{ box.reason }}</p>
+                    </div>
+                    {% endfor %}
+
+                </div>
+            </section>
+            {% endfor %}
+
+        </main>
+
+        <footer class="page-footer">
+            <p>@ZikeQuote3 by LifeCheckpoint</p>
+        </footer>
+    </div>
+
+</body>
+</html>

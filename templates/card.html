@@ -1,0 +1,31 @@
+<!-- 
+    语录卡片模板
+    - quote: 语录内容
+    - reason: 理由或评论
+    - author: 作者姓名
+-->
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>语录卡片</title>
+    <link rel="stylesheet" href="card.css">
+</head>
+<body>
+    <div class="quote-container">
+        <div class="quote-card">
+            <p class="quote-text">
+                {{ quote }}
+            </p>
+            <p class="quote-comment">
+                {{ reason }}
+            </p>
+            <div class="quote-author">
+                <span class="author-name">—— {{ author }}</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
