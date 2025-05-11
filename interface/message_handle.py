@@ -1,6 +1,7 @@
 from ..imports import *
+from ..utils.llm_solo import llm_solo
 from .quote_type import QuoteInfoV2, QuoteManager
-from .llm_solo import llm_solo
+from ..utils.states import HistoryQuoteState
 
 def get_msg_file_name(group_id: int) -> str:
     """根据群组 ID 获取消息记录文件名"""
@@ -8,6 +9,10 @@ def get_msg_file_name(group_id: int) -> str:
 
 def get_quote_file(group_id: int) -> str:
     """根据群组 ID 获取语录文件名"""
+    return f"{group_id}.json"
+
+def get_mapping_file(group_id: int) -> str:
+    """根据群组 ID 获取消息记录映射文件名"""
     return f"{group_id}.json"
 
 def validate_msg(event: GroupME) -> bool:
@@ -18,8 +23,19 @@ def validate_msg(event: GroupME) -> bool:
     return True
 
 async def get_group_member_cardname(group_id: int, user_id: int, bot: Bot) -> str:
+    """获取群组成员的群名片"""
     name = (await bot.get_group_member_info(group_id=group_id, user_id=user_id, no_cache=False)).get("card")
     return name if name else ""
+
+def add_mapping(group_id: int, message_id: int, quote_id: int):
+    """添加消息 ID 和语录 ID 的映射关系"""
+    state = HistoryQuoteState(get_mapping_file(group_id))
+    state.add_mapping(message_id, quote_id)
+
+def get_mapping(group_id: int, message_id: int) -> Optional[int]:
+    """获取消息 ID 和语录 ID 的映射关系"""
+    state = HistoryQuoteState(get_mapping_file(group_id))
+    return state.get_mapping(message_id)
 
 async def pick_received_msg(event: GroupME, bot: Bot):
     if not validate_msg(event):
@@ -36,7 +52,7 @@ async def pick_received_msg(event: GroupME, bot: Bot):
     msg_file_name = get_msg_file_name(group_id)
 
     # 更新群组消息记录文件，完成后保存
-    chat = ChatHistoryManager("quote_v3", "history", msg_file_name)
+    chat = ChatHistoryManager(PluginMetadata.name, "history", msg_file_name)
     with chat:
         chat.add_message(ChatMessageV3(
             message_id=msg_id,
@@ -51,10 +67,18 @@ async def pick_received_msg(event: GroupME, bot: Bot):
 
         # 到达条数，触发更新并尝试清空
         if len(chat.get_messages()) >= cfg.pickup_interval:
-            if await LLM_quote_pickup(group_id, chat.get_typed_messages()):
-                chat.clear_messages()
-            else:
-                chat.clip_messages(cfg.pickup_interval - 1)
+            return await read_msg_and_pickup(group_id)
+
+async def read_msg_and_pickup(group_id: int) -> bool:
+    """读取消息并进行语录筛选提取"""
+    chat = ChatHistoryManager(PluginMetadata.name, "history", get_msg_file_name(group_id))
+    with chat:
+        if await LLM_quote_pickup(group_id, chat.get_typed_messages()):
+            chat.clear_messages()
+            return True
+        else:
+            chat.clip_messages(cfg.pickup_interval - 1)
+            return False
 
 async def LLM_quote_pickup(group_id: int, message_list: List[ChatMessageV3]) -> bool:
     """调用 LLM 进行语录筛选提取"""
@@ -92,6 +116,18 @@ async def LLM_quote_pickup(group_id: int, message_list: List[ChatMessageV3]) -> 
 
         # 添加语录
         qm = QuoteManager(get_quote_file(group_id))
+
+        # 检查重复
+        if not cfg.enable_duplicate:
+            duplicate_quote = [
+                qu for qu in qm.get_typed_quotes()
+                if qu.quote.strip() == quote["quote"].strip()
+                and qu.author_id == message_data.source_user_id
+            ]
+            if len(duplicate_quote) > 0:
+                print(f"[Warning] 语录重复，跳过: {quote["quote"]}")
+                continue
+
         with qm:
             qm.add_quote(QuoteInfoV2(
                 quote_id=target_quote_id,

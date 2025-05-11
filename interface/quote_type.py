@@ -20,12 +20,12 @@ class QuoteInfoV1:
 
 @dataclass
 class QuoteInfoV2:
-    quote_id: int # 语录 ID
+    quote_id: int # 语录 ID，通常为被收录的消息 ID
     author_id: int # 作者 ID
     author_name: str # 作者名称
     author_card: str # 群名片
-    time_stamp: Optional[int]
-    quote: str
+    time_stamp: Optional[int] # 时间戳
+    quote: str # 语录内容
     reason: str = "" # 收录原因（评论）
     show_time: int = 0 # 展示次数
     recommend: bool = False # 推荐
@@ -37,7 +37,7 @@ class QuoteManager:
     """
     def __init__(self, file_name: str):
         self.quote_list = []
-        self.file_manager = JsonIO.from_module("quote_v3", "quotes")
+        self.file_manager = JsonIO.from_module(PluginMetadata.name, "quotes")
         self.file_name = file_name
         
     def add_quote(self, quote: Union[QuoteInfoV1, QuoteInfoV2]):

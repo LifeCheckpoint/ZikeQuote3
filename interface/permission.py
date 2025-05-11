@@ -8,6 +8,9 @@ async def quote_permission(event: GroupME):
     """
     群权限管理，可用白名单或黑名单
     """
+    if not cfg.enable:
+        return False
+    
     match cfg.permission.mode:
         case "white":
             permission = str(event.group_id) in str(cfg.permission.white_list)

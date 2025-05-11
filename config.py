@@ -29,10 +29,13 @@ class Config(BaseModel):
     """
     Quote V3 插件配置
     """
+    enable: bool = False # 启用插件
     quote_managers: list[int] = [2435206827] # 管理员
     pickup_interval: int = 80 # 语录收集间隔
     msg_max_length: int = 35 # 允许被处理的最大消息长度
+    mapping_max_size: int = 50 # 储存消息ID-语录ID映射的最大数量
     weight_p_transform: float = 1.2 # 权重幂变换参数，越小越平滑，越大越容易选到高权重语录
+    enable_duplicate: bool = False # 是否允许个人语录重复收录
 
     path: PathConfig = PathConfig()
     permission: PermissionConfig = PermissionConfig()
