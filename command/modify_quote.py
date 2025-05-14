@@ -1,6 +1,9 @@
 from ..imports import *
 from ..interface.quote_handle import add_quote, remove_quote, QuoteInfoV2
-from ..interface.message_handle import get_group_member_cardname, get_mapping
+from ..interface.message_handle import (
+    get_group_member_cardname,
+    get_mapping
+)
 
 add_quote_alias = {"add_quote", "quote_add", "添加语录", "新增语录", "语录添加"}
 matcher_add_quote = on_command("加语录", aliases=add_quote_alias, priority=10, block=True, permission=quote_permission)

@@ -1,3 +1,4 @@
+from dataclasses import asdict
 from datetime import datetime
 from nonebot import on_command, on_message, get_plugin_config, require
 from nonebot.adapters import Message

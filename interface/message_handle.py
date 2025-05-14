@@ -22,6 +22,13 @@ def validate_msg(event: GroupME) -> bool:
         return False
     return True
 
+def get_typed_message_list(group_id: int, filter: Callable[[ChatMessageV3], bool] = lambda msg: True) -> List[ChatMessageV3]:
+    """获取指定群组的消息列表"""
+    chat = ChatHistoryManager(PluginMetadata.name, "history", get_msg_file_name(group_id))
+    with chat:
+        messages = chat.get_typed_messages()
+        return [msg for msg in messages if filter(msg)]
+
 async def get_group_member_cardname(group_id: int, user_id: int, bot: Bot) -> str:
     """获取群组成员的群名片"""
     name = (await bot.get_group_member_info(group_id=group_id, user_id=user_id, no_cache=False)).get("card")

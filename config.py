@@ -36,6 +36,7 @@ class Config(BaseModel):
     mapping_max_size: int = 50 # 储存消息ID-语录ID映射的最大数量
     weight_p_transform: float = 1.2 # 权重幂变换参数，越小越平滑，越大越容易选到高权重语录
     enable_duplicate: bool = False # 是否允许个人语录重复收录
+    max_rank_show: int = 40 # 排行榜允许显示的最大人数
 
     path: PathConfig = PathConfig()
     permission: PermissionConfig = PermissionConfig()

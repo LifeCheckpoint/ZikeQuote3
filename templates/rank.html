@@ -8,7 +8,7 @@
         - contributors: 人数
         - average_quotes: 平均语录数量
     - ranking: 排行榜详情列表
-        - name: 用户名称
+        - author: 用户名称
         - count: 语录数量
         - percentage: 百分比
 -->
@@ -39,7 +39,7 @@
             {% for item in ranking %}
             <div class="rank-item">
                 <div class="rank-number">#{{ loop.index }}</div>
-                <div class="rank-name">{{ item.name }}</div>
+                <div class="rank-name">{{ item.author }}</div>
                 <div class="rank-bar-container">
                     <div class="rank-bar" style="width: {{ item.percentage }}%"></div>
                 </div>

@@ -136,6 +136,26 @@ def msg_remove_quote_failed(error: Optional[str] = None):
     options = {
         f"Σ(っ °Д °;)っ 删除失败了... 原因：{reason}": 1,
         f"删除失败了呢... 服务器说：{reason} (╥﹏╥)": 1,
-        f"糟糕！删除语录时遇到了问题：{reason} (⊙_⊙)": 1
+        f"糟糕！删除语录时遇到了问题，问题是：{reason} (⊙_⊙)": 1
+    }
+    return options
+
+def msg_quote_card_failed(error: Optional[str] = None):
+    """语录卡生成失败"""
+    reason = error or "我也不知道..."
+    options = {
+        f"语录卡...没有成功制作呢... 原因：{reason}": 1,
+        f"服务器搞砸啦（＞人＜；）... 服务器说：{reason} (╥﹏╥)": 1,
+        f"语录卡生成时出了点小故障...原因：{reason} (⊙_⊙)": 1
+    }
+    return options
+
+def msg_rank_failed(error: Optional[str] = None):
+    """排行榜生成失败"""
+    reason = error or "我也不知道..."
+    options = {
+        f"排行榜...没有成功制作呢... 原因：{reason}": 1,
+        f"服务器出、出了点问题（＞人＜；）... 服务器说：{reason} (。>︿<)_θ": 1,
+        f"服务器没有成功生成排行榜...因为...{reason} (⊙x⊙;)": 1
     }
     return options
