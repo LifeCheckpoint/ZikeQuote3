@@ -1,6 +1,7 @@
 from ..imports import *
 from ..utils.llm_solo import llm_solo
-from .quote_type import QuoteInfoV2, QuoteManager
+from .quote_type import QuoteInfoV2, QuoteV2Comment, QuoteManager
+from .quote_type import ID_AI as COMMENT_AUTHOR_AI
 from ..utils.states import HistoryQuoteState
 
 def get_msg_file_name(group_id: int) -> str:
@@ -113,7 +114,7 @@ async def LLM_quote_pickup(group_id: int, message_list: List[ChatMessageV3]) -> 
     print(f"收集到 {result['num_quotes']} 条语录")
     for quote in result["quotes"]:
         # 获取 id
-        target_quote_id = quote["id"]
+        target_quote_id = quote.get("id", -1)
 
         # 根据 id 查找消息
         message_data = next((msg for msg in message_list if str(msg.message_id) == str(target_quote_id)), None)
@@ -137,16 +138,18 @@ async def LLM_quote_pickup(group_id: int, message_list: List[ChatMessageV3]) -> 
 
         with qm:
             qm.add_quote(QuoteInfoV2(
-                quote_id=target_quote_id,
+                id=target_quote_id,
                 author_id=message_data.source_user_id,
                 author_name=message_data.source_user_name,
                 author_card=message_data.source_user_nickname,
                 time_stamp=message_data.time_stamp,
                 quote=quote["quote"],
-                reason=quote["reason"],
-                show_time=0,
-                recommend=False,
-                ext_data=None
+            ))
+            qm.add_comment(target_quote_id, QuoteV2Comment(
+                content = quote["comment"],
+                author_id = COMMENT_AUTHOR_AI,
+                author_name = "AI",
+                time_stamp=message_data.time_stamp
             ))
 
     return True

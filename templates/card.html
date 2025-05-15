@@ -1,8 +1,11 @@
 <!-- 
     语录卡片模板
     - quote: 语录内容
-    - reason: 理由或评论
-    - author: 作者姓名
+    - author_name: 作者姓名
+    - comments: 评论
+        - content: 评论内容
+        - author_name: 评论作者姓名
+    - color: 卡片颜色
 -->
 
 <!DOCTYPE html>
@@ -15,15 +18,28 @@
 </head>
 <body>
     <div class="quote-container">
-        <div class="quote-card">
-            <p class="quote-text">
-                {{ quote }}
-            </p>
-            <p class="quote-comment">
-                {{ reason }}
-            </p>
+        <div class="quote-card" style="
+            --card-color: {{ color | default('#4a6fa5') }};
+        "></div>
+
+            <div class="quote-id">{{ id }}</div>
+            <p class="quote-text">{{ quote }}</p>
             <div class="quote-author">
-                <span class="author-name">—— {{ author_card }}</span>
+                <span class="author-name">—— {{ author_name }}</span>
+            </div>
+            
+            <div class="quote-comments">
+                {% for comment in comments %}
+                <div class="comment-item">
+                    <p class="comment-text">{{ comment.content }}</p>
+                    {% if comment.author_name %}
+                    <div class="comment-author">
+                        <span class="author-name">◸{{ comment.author_name }}◿</span>
+                    </div>
+                    {% endif %}
+                    <div class="comment-id">{{ comment.id }}</div>
+                </div>
+                {% endfor %}
             </div>
         </div>
     </div>

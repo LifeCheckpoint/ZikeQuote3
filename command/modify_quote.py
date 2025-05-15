@@ -1,9 +1,29 @@
+"""
+语录变更相关命令
+"""
+
 from ..imports import *
 from ..interface.quote_handle import add_quote, remove_quote, QuoteInfoV2
 from ..interface.message_handle import (
+    read_msg_and_pickup,
     get_group_member_cardname,
     get_mapping
 )
+
+update_quote_alias = {"更新语录", "语录更新", "强制更新语录", "强制语录更新"}
+matcher_update_quote = on_command("语录强制更新", aliases=update_quote_alias, priority=10, block=True, permission=quote_permission)
+@matcher_update_quote.handle()
+async def f_update_quote(event: GroupME):
+    """
+    强制更新语录
+    """
+    await msend(matcher_update_quote, msg_quote_on_update)
+    result = await read_msg_and_pickup(event.group_id)
+    if result:
+        await mfinish(matcher_update_quote, msg_quote_update_success)
+    else:
+        await mfinish(matcher_update_quote, msg_quote_update_failed)
+
 
 add_quote_alias = {"add_quote", "quote_add", "添加语录", "新增语录", "语录添加"}
 matcher_add_quote = on_command("加语录", aliases=add_quote_alias, priority=10, block=True, permission=quote_permission)
@@ -26,16 +46,12 @@ async def f_add_quote(event: GroupME, bot: Bot):
         
         try:
             add_quote(event.group_id, QuoteInfoV2(
-                quote_id = reply.message_id,
+                id = reply.message_id,
                 author_id = reply.sender.user_id or -1,
                 author_name = reply.sender.nickname or "",
                 author_card = await get_group_member_cardname(event.group_id, reply.sender.user_id or -1, bot) or "",
                 time_stamp = event.time,
                 quote = reply_msg,
-                reason = "手动添加",
-                show_time = 0,
-                recommend = False,
-                ext_data = None
             ))
         except Exception as e:
             await mfinish(matcher_add_quote, msg_add_quote_failed, error=str(e))

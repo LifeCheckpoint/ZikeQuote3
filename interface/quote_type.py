@@ -7,6 +7,7 @@ from dataclasses import dataclass, asdict
 # Quote Data Class
 VERSION_V1 = "1.0"
 VERSION_V2 = "2.0"
+ID_AI = -1
 
 @dataclass
 class QuoteInfoV1:
@@ -19,14 +20,23 @@ class QuoteInfoV1:
     ext_data: Optional[Dict] = None
 
 @dataclass
+class QuoteV2Comment:
+    content: str # 评论内容
+    author_id: int # 评论作者 ID
+    author_name: str # 评论作者名称 
+    id: Optional[int] = -1 # 评论 ID
+    time_stamp: Optional[int] = -1 # 评论时间戳
+    ext_data: Optional[Dict] = None
+
+@dataclass
 class QuoteInfoV2:
-    quote_id: int # 语录 ID，通常为被收录的消息 ID
+    id: int # 语录 ID，通常为被收录的消息 ID
     author_id: int # 作者 ID
     author_name: str # 作者名称
     author_card: str # 群名片
     time_stamp: Optional[int] # 时间戳
     quote: str # 语录内容
-    reason: str = "" # 收录原因（评论）
+    comments: List[QuoteV2Comment] = [] # 收录原因（评论）
     show_time: int = 0 # 展示次数
     recommend: bool = False # 推荐
     ext_data: Optional[Dict] = None
@@ -42,21 +52,73 @@ class QuoteManager:
         
     def add_quote(self, quote: Union[QuoteInfoV1, QuoteInfoV2]):
         """添加语录到语录列表"""
-        dict_quote = asdict(quote)
-        
+        # V1 语录转换为 V2
         if isinstance(quote, QuoteInfoV1):
-            dict_quote["quote_id"] = hash(str(dict_quote["from_id"]) + dict_quote["quote"] + str(dict_quote["time_stamp"]))
-            dict_quote["author_id"] = dict_quote["from_id"]
-            dict_quote["author_name"] = dict_quote["from_name"]
-            dict_quote["author_card"] = dict_quote["from_name"]
-            dict_quote["time_stamp"] = dict_quote["time_stamp"]
-            dict_quote["quote"] = dict_quote["quote"]
-            dict_quote["reason"] = dict_quote["reason"]
-            dict_quote["show_time"] = dict_quote["show_time"]
-            dict_quote["recommend"] = False
-            dict_quote["ext_data"] = dict_quote["ext_data"]
+            quote_latest = QuoteInfoV2(
+                id = hash(str(quote.from_id) + quote.quote + str(quote.time_stamp)),
+                author_id = quote.from_id,
+                author_name = quote.from_name,
+                author_card = quote.from_name,
+                time_stamp = quote.time_stamp,
+                quote = quote.quote,
+                comments = [QuoteV2Comment(
+                    id = hash(quote.reason + str(quote.time_stamp)),
+                    content = quote.reason,
+                    author_id = ID_AI,
+                    author_name = "AI",
+                    time_stamp = quote.time_stamp,
+                )],
+                show_time = quote.show_time,
+                recommend = False,
+                ext_data = quote.ext_data,
+            )
+        else:
+            quote_latest = quote
         
-        self.quote_list.append(dict_quote)
+        self.quote_list.append(asdict(quote_latest))
+
+    def remove_quote(self, quote_id: int):
+        """
+        删除语录
+        
+        `quote_id`: 语录 ID
+        """
+        for quote in self.quote_list:
+            if quote["quote_id"] == quote_id:
+                self.quote_list.remove(quote)
+                return True
+        return False
+
+    def add_comment(self, quote_id: int, comment: QuoteV2Comment) -> bool:
+        """
+        添加评论到语录
+        
+        `quote_id`: 语录 ID
+        `comment`: 评论内容
+        """
+        if comment.id == None or comment.id == -1:
+            comment.id = hash(comment.content + str(comment.time_stamp))
+        
+        for quote in self.quote_list:
+            if quote["quote_id"] == quote_id:
+                quote["comments"].append(asdict(comment))
+                return True
+        return False
+    
+    def remove_comment(self, quote_id: int, comment_id: int) -> bool:
+        """
+        删除语录评论
+        
+        `quote_id`: 语录 ID
+        `comment_id`: 评论 ID
+        """
+        for quote in self.quote_list:
+            if quote["quote_id"] == quote_id:
+                for comment in quote["comments"]:
+                    if comment["id"] == comment_id:
+                        quote["comments"].remove(comment)
+                        return True
+        return False
 
     def update_show_time(self, quote_id: int, show_time: Optional[int] = None):
         """
@@ -107,10 +169,13 @@ class QuoteManager:
 
         # 转换为 V2 格式
         if get_json_ver_info(data, VERSION_V1) == VERSION_V1:
-            data = {"quote_list": data}
-            data = set_json_ver_info(data, VERSION_V2)
-
-        self.quote_list = data.get("quote_list", [])
+            self.quote_list = []
+            for quote_v1 in data:
+                self.add_quote(QuoteInfoV1(**quote_v1))
+        elif get_json_ver_info(data, VERSION_V1) == VERSION_V2:
+            self.quote_list = data.get("quote_list", [])
+        else:
+            raise ValueError(f"不支持的语录版本: {data.get('version', 'Unknown')}")
 
     def save_to_file(self):
         """保存语录到文件"""
@@ -121,6 +186,9 @@ class QuoteManager:
         self.file_manager.save_json_atomic(self.file_name, data)
 
     def __enter__(self):
+        """
+        读取并保存语录上下文管理器
+        """
         self.load_from_file()
 
     def __exit__(self, exc_type, exc_val, exc_tb):

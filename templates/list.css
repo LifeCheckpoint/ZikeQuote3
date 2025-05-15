@@ -127,6 +127,25 @@ body {
     margin-bottom: 0.4rem;
 }
 
+/* 新增作者信息容器样式 */
+.reason-author-container {
+    text-align: right;
+    margin-top: 0.2rem;
+}
+
+/* 更新作者标签样式 */
+.reason-author {
+    display: inline-block;
+    font-size: 0.75rem;
+    color: #f5f5dc; /* 米白色字体 */
+    background-color: #555; /* 深灰色背景 */
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    /* font-style: italic; */
+    line-height: 1.2;
+    margin-bottom: 0.3rem;
+}
+
 /* Footer Styling */
 .page-footer {
     text-align: center;

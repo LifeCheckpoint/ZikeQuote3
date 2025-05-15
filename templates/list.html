@@ -8,7 +8,8 @@
         - color: 分页颜色
         - boxes: 该页语录列表
             - quote: 语录内容
-            - reason: 语录添加原因/评论
+            - comment: 语录首条评论
+            - comment_author_name: 语录首条评论作者
 -->
 
 <!DOCTYPE html>
@@ -28,29 +29,29 @@
         </header>
 
         <main class="main-content">
-
             {% for section in sections %}
             <section class="card">
                 <h2 class="card-title" style="background-color: {{ section.color }}">{{ section.title }}</h2>
                 <div class="card-content">
-
                     {% for box in section.boxes %}
                     <div class="content-box">
                         <h3 class="box-title">{{ box.quote }}</h3>
-                        <p class="box-description">{{ box.reason }}</p>
+                        <p class="box-description">{{ box.comment }}</p>
+                        {% if box.comment_author_name %}
+                        <div class="reason-author-container">
+                            <span class="reason-author">◸{{ box.comment_author_name }}◿</span>
+                        </div>
+                        {% endif %}
                     </div>
                     {% endfor %}
-
                 </div>
             </section>
             {% endfor %}
-
         </main>
 
         <footer class="page-footer">
             <p>@ZikeQuote3 by LifeCheckpoint</p>
         </footer>
     </div>
-
 </body>
 </html>

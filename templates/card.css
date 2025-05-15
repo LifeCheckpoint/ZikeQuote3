@@ -9,78 +9,120 @@ body {
                  "Helvetica Neue", "Microsoft Yahei", "微软雅黑", sans-serif;
     background-color: #f5f7fa;
     color: #333;
-    line-height: 1.4;
+    line-height: 1.6;
     padding: 1rem;
 }
 
-/* 语录卡片容器 */
 .quote-container {
-    max-width: 400px;
+    max-width: 600px;
     margin: 0 auto;
 }
 
-/* 语录卡片主体 */
 .quote-card {
     background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
     padding: 2.5rem;
     margin-bottom: 2rem;
+    margin-left: 1.5rem;
     position: relative;
-    border-left: 8px solid #4a6fa5;
+    border-left: 8px solid var(--card-color);
 }
 
-/* 语录内容 */
 .quote-text {
     font-size: 1.8rem;
     font-weight: 500;
     line-height: 1.8;
-    color: #2c3e50;
-    margin-bottom: 1.5rem;
+    color: var(--card-color);
     font-family: "方正风雅宋简体";
+    text-indent: 2em;
+    position: relative;
 }
 
-/* 语录前加一点空格缩进 */
 .quote-text::before {
-    content: "  ";
-    display: inline-block;
-    width: 0.5rem; /* 调整缩进的宽度 */
+    content: "“";
+    position: absolute;
+    left: -1.2em;
+    top: 0;
+    font-size: 5rem;
+    color: var(--card-color);
+    opacity: 0.15;
+    font-family: serif;
+    line-height: 1;
 }
 
-/* 语录注释 */
-.quote-comment {
-    font-size: 0.8rem;
-    color: #666;
-    line-height: 1.2;
-    margin-bottom: 1.5rem;
-    padding-left: 1rem;
+.quote-comments {
+    margin-bottom: 1rem;
+}
+
+.comment-item {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
     border-left: 2px solid #e8e8e8;
+    position: relative;
+    background-color: #f8f9fa;
+    padding: 1rem;
+    padding-bottom: 0.8rem;
+    border-radius: 6px;
+}
+
+.comment-text {
+    font-size: 0.9rem;
+    color: #555;
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
     font-family: "微软雅黑";
 }
 
-/* 作者信息 */
+.comment-author {
+    text-align: right;
+    margin-top: 0.5rem;
+}
+
+.comment-author .author-name {
+    display: inline-block;
+    font-size: 0.8rem;
+    color: #f5f5dc;
+    background-color: #555;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+}
+
 .quote-author {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
+    text-align: right;
+    margin-top: 0.1rem;
 }
 
-.author-name {
-    font-size: 0.9rem;
-    color: #4a6fa5;
+.quote-author .author-name {
+    font-size: 0.95rem;
+    color: var(--card-color);
     font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
+    padding: 0.3rem 0;
+    border-bottom: 1px dashed var(--card-color);
+    display: inline-block;
+    margin-bottom: 0.8rem;
 }
 
-/* 装饰元素 */
-.quote-card::before {
-    content: "“";
+/* 主ID标签样式 */
+.quote-id {
     position: absolute;
-    top: 1.5rem;
-    left: 0.5rem;
-    font-size: 4rem;
-    color: rgba(74, 111, 165, 0.1);
-    font-family: serif;
-    line-height: 1;
+    left: 0.8rem;
+    top: 0.4rem;
+    font-size: 0.7rem;
+    color: var(--card-color);
+    opacity: 0.2;
+    padding: 0.2rem 0.6rem;
+    z-index: 1;
+}
+
+/* 评论ID标签样式 */
+.comment-id {
+    position: absolute;
+    left: 0rem;
+    bottom: 0rem;
+    font-size: 0.6rem;
+    color: var(--card-color);
+    opacity: 0.2;
+    padding: 0.1rem 0.4rem;
 }

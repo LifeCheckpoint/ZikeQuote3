@@ -49,7 +49,7 @@ def calculate_weight(quotes: List[QuoteInfoV2], filter: Callable[[QuoteInfoV2], 
     weights = {}
     min_show_time = abs(min(quote.show_time for quote in filtered_quotes))
     for quote in filtered_quotes:
-        weights[quote.quote_id] = (1 / (quote.show_time - min_show_time + 1)) ** cfg.weight_p_transform
+        weights[quote.id] = (1 / (quote.show_time - min_show_time + 1)) ** cfg.weight_p_transform
     
     total_weight = sum(weights.values())
     for id, weight in weights.items():
@@ -100,9 +100,9 @@ def get_random_quote(group_id: int, filter: Callable[[QuoteInfoV2], bool] = lamb
         qm = QuoteManager(get_quote_file(group_id))
         with qm:
             if isinstance(result, QuoteInfoV2):
-                qm.update_show_time(result.quote_id)
+                qm.update_show_time(result.id)
             else:
-                for quote in result: qm.update_show_time(quote.quote_id)
+                for quote in result: qm.update_show_time(quote.id)
 
     return result
 
