@@ -86,6 +86,7 @@ async def pick_received_msg(event: GroupME, bot: Bot) -> Optional[bool]:
 async def read_msg_and_pickup(group_id: int) -> bool:
     """读取消息并进行语录筛选提取"""
     chat = ChatHistoryManager(__plugin_meta__.name, "history", get_msg_file_name(group_id))
+    chat.load_from_file()
     result = await LLM_quote_pickup(group_id, chat.get_typed_messages())
     with chat:
         if result:
@@ -96,6 +97,10 @@ async def read_msg_and_pickup(group_id: int) -> bool:
 
 async def LLM_quote_pickup(group_id: int, message_list: List[ChatMessageV3]) -> bool:
     """调用 LLM 进行语录筛选提取"""
+    if len(message_list) == 0:
+        print("[WARNING] 消息列表为空，可能需要检查相关配置是否正确")
+        return False
+    
     prompt_quote_pickup = (cfg.path.prompts / "quote_pickup.txt").read_text(encoding="utf-8")
     full_prompt = template(prompt_quote_pickup, {
         "message_history": "\n".join([f"({msg.message_id}) {msg.source_user_name}: {msg.message}" for msg in message_list])
