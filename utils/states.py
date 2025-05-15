@@ -1,6 +1,7 @@
 """
 管理全局消息状态
 """
+from .. import __plugin_meta__
 from ..imports import *
 
 class HistoryQuoteState:
@@ -9,7 +10,7 @@ class HistoryQuoteState:
     """
     def __init__(self, file_name: str):
         self.mapping_list = []
-        self.file_manager = JsonIO.from_module(PluginMetadata.name, "HistoryMapping")
+        self.file_manager = JsonIO.from_module(__plugin_meta__.name, "HistoryMapping")
         self.file_name = file_name
         self.load_from_file()
 

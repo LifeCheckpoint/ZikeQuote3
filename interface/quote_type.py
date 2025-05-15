@@ -1,8 +1,9 @@
 """
 语录管理器
 """
+from .. import __plugin_meta__
 from ..imports import *
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, field
 
 # Quote Data Class
 VERSION_V1 = "1.0"
@@ -19,6 +20,9 @@ class QuoteInfoV1:
     show_time: int = 0
     ext_data: Optional[Dict] = None
 
+    def __json__(self):
+        return asdict(self)
+
 @dataclass
 class QuoteV2Comment:
     content: str # 评论内容
@@ -28,6 +32,9 @@ class QuoteV2Comment:
     time_stamp: Optional[int] = -1 # 评论时间戳
     ext_data: Optional[Dict] = None
 
+    def __json__(self):
+        return asdict(self)
+
 @dataclass
 class QuoteInfoV2:
     quote_id: int # 语录 ID，通常为被收录的消息 ID
@@ -36,10 +43,13 @@ class QuoteInfoV2:
     author_card: str # 群名片
     time_stamp: Optional[int] # 时间戳
     quote: str # 语录内容
-    comments: List[QuoteV2Comment] = [] # 收录原因（评论）
+    comments: List[QuoteV2Comment] = field(default_factory=list) # 收录原因（评论）
     show_time: int = 0 # 展示次数
     recommend: bool = False # 推荐
     ext_data: Optional[Dict] = None
+
+    def __json__(self):
+        return asdict(self)
 
 class QuoteManager:
     """
@@ -47,7 +57,7 @@ class QuoteManager:
     """
     def __init__(self, file_name: str):
         self.quote_list = []
-        self.file_manager = JsonIO.from_module(PluginMetadata.name, "quotes")
+        self.file_manager = JsonIO.from_module(__plugin_meta__.name, "quotes")
         self.file_name = file_name
         
     def add_quote(self, quote: Union[QuoteInfoV1, QuoteInfoV2]):
@@ -171,11 +181,21 @@ class QuoteManager:
         if get_json_ver_info(data, VERSION_V1) == VERSION_V1:
             self.quote_list = []
             for quote_v1 in data:
+                # 去除残留多余属性
+                quote_v1: dict
+                quote_v1.pop("weight", None)
                 self.add_quote(QuoteInfoV1(**quote_v1))
-        elif get_json_ver_info(data, VERSION_V1) == VERSION_V2:
-            self.quote_list = data.get("quote_list", [])
-        else:
-            raise ValueError(f"不支持的语录版本: {data.get('version', 'Unknown')}")
+
+        # V2 语录格式处理
+        if get_json_ver_info(data, VERSION_V1) == VERSION_V2:
+            quotes = data.get("quote_list", [])
+            # 将每个 quote 中的 comments 转换为 QuoteV2Comment 对象
+            for quote in quotes:
+                quote["comments"] = [QuoteV2Comment(**comment) for comment in quote.get("comments", [])]
+            self.set_quotes(quotes)
+            return
+            
+        raise ValueError("未知语录文件版本，请检查文件内容")
 
     def save_to_file(self):
         """保存语录到文件"""

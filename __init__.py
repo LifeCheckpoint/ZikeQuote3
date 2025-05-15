@@ -1,5 +1,4 @@
 from .imports import *
-from .command import *
 
 __plugin_meta__ = PluginMetadata(
     name="ZikeQuote3",
@@ -13,3 +12,5 @@ __plugin_meta__ = PluginMetadata(
         "version": "0.3.0",
     },
 )
+
+from .command import *

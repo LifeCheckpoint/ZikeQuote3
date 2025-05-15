@@ -73,7 +73,7 @@ async def f_add_quote(event: GroupME, bot: Bot):
 remove_quote_alias = {"remove_quote", "quote_remove", "删除语录", "语录删除"}
 matcher_remove_quote = on_command("删语录", aliases=remove_quote_alias, priority=10, block=True, permission=quote_permission) # type: ignore
 @matcher_remove_quote.handle()
-async def f_remove_quote(event: GroupME, bot: Bot):
+async def f_remove_quote(event: GroupME, bot: Bot, arg: Message = CommandArg()):
     """
     删除语录
 
@@ -87,7 +87,7 @@ async def f_remove_quote(event: GroupME, bot: Bot):
     
     # 判断 reply
     reply = event.reply
-    key = event.get_plaintext().strip()
+    key = arg.extract_plain_text().strip()
     if reply == None and key == "":
         await mfinish(matcher_remove_quote, msg_remove_quote_reply_args_missing)
         return
@@ -113,7 +113,7 @@ async def f_remove_quote(event: GroupME, bot: Bot):
 comment_quote_alias = {"quote_comment", "评论语录", "评价语录", "评"}
 matcher_comment_quote = on_command("评语录", aliases=comment_quote_alias, priority=10, block=True, permission=quote_permission) # type: ignore
 @matcher_comment_quote.handle()
-async def f_comment_quote(event: GroupME, bot: Bot):
+async def f_comment_quote(event: GroupME, bot: Bot, arg: Message = CommandArg()):
     """
     评论语录
 
@@ -122,16 +122,11 @@ async def f_comment_quote(event: GroupME, bot: Bot):
     """
     # 判断 reply
     reply = event.reply
-    content = event.get_plaintext().strip()
+    content = arg.extract_plain_text().strip()
     if reply == None or content == "":
         await mfinish(matcher_comment_quote, msg_comment_quote_reply_args_missing)
         return
 
-    reply_msg = reply.message.extract_plain_text().strip()
-    if reply_msg == "":
-        await mfinish(matcher_add_quote, msg_comment_quote_reply_args_missing)
-        return
-    
     # 获取语录 ID
     quote_id = get_mapping(event.group_id, reply.message_id)
     if quote_id == None:
@@ -147,6 +142,6 @@ async def f_comment_quote(event: GroupME, bot: Bot):
     ))
 
     if result:
-        await mfinish(matcher_comment_quote, msg_comment_quote_success, author=event.sender.nickname)
+        await mfinish(matcher_comment_quote, msg_comment_quote_success)
     else:
         await mfinish(matcher_comment_quote, msg_comment_quote_failed)

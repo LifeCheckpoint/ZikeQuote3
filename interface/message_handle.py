@@ -1,3 +1,4 @@
+from .. import __plugin_meta__
 from ..imports import *
 from ..utils.llm_solo import llm_solo
 from .quote_type import QuoteInfoV2, QuoteV2Comment, QuoteManager
@@ -25,7 +26,7 @@ def validate_msg(event: GroupME) -> bool:
 
 def get_typed_message_list(group_id: int, filter: Callable[[ChatMessageV3], bool] = lambda msg: True) -> List[ChatMessageV3]:
     """获取指定群组的消息列表"""
-    chat = ChatHistoryManager(PluginMetadata.name, "history", get_msg_file_name(group_id))
+    chat = ChatHistoryManager(__plugin_meta__.name, "history", get_msg_file_name(group_id))
     with chat:
         messages = chat.get_typed_messages()
         return [msg for msg in messages if filter(msg)]
@@ -65,7 +66,7 @@ async def pick_received_msg(event: GroupME, bot: Bot) -> Optional[bool]:
     msg_file_name = get_msg_file_name(group_id)
 
     # 更新群组消息记录文件，完成后保存
-    chat = ChatHistoryManager(PluginMetadata.name, "history", msg_file_name)
+    chat = ChatHistoryManager(__plugin_meta__.name, "history", msg_file_name)
     with chat:
         chat.add_message(ChatMessageV3(
             message_id=msg_id,
@@ -78,20 +79,20 @@ async def pick_received_msg(event: GroupME, bot: Bot) -> Optional[bool]:
             message=event.get_plaintext().strip()
         ))
 
-        # 到达条数，触发更新并尝试清空
-        if len(chat.get_messages()) >= cfg.pickup_interval:
-            return await read_msg_and_pickup(group_id)
+    # 到达条数，触发更新并尝试清空
+    if len(chat.get_messages()) >= cfg.pickup_interval:
+        return await read_msg_and_pickup(group_id)
 
 async def read_msg_and_pickup(group_id: int) -> bool:
     """读取消息并进行语录筛选提取"""
-    chat = ChatHistoryManager(PluginMetadata.name, "history", get_msg_file_name(group_id))
+    chat = ChatHistoryManager(__plugin_meta__.name, "history", get_msg_file_name(group_id))
+    result = await LLM_quote_pickup(group_id, chat.get_typed_messages())
     with chat:
-        if await LLM_quote_pickup(group_id, chat.get_typed_messages()):
+        if result:
             chat.clear_messages()
-            return True
         else:
             chat.clip_messages(cfg.pickup_interval - 1)
-            return False
+    return result
 
 async def LLM_quote_pickup(group_id: int, message_list: List[ChatMessageV3]) -> bool:
     """调用 LLM 进行语录筛选提取"""

@@ -111,7 +111,7 @@ body {
     top: 0.4rem;
     font-size: 0.7rem;
     color: var(--card-color);
-    opacity: 0.2;
+    opacity: 0.1;
     padding: 0.2rem 0.6rem;
     z-index: 1;
 }
@@ -123,6 +123,6 @@ body {
     bottom: 0rem;
     font-size: 0.6rem;
     color: var(--card-color);
-    opacity: 0.2;
+    opacity: 0.1;
     padding: 0.1rem 0.4rem;
 }

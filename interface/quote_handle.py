@@ -76,7 +76,12 @@ def get_typed_quote_list(group_id: int, filter: Callable[[QuoteInfoV2], bool] = 
     quotes = quote_manager.get_typed_quotes()
     return [quote for quote in quotes if filter(quote)]
 
-def get_random_quote(group_id: int, filter: Callable[[QuoteInfoV2], bool] = lambda quote: True, list_num: Optional[int] = None, update_showtime: bool = True) -> Optional[Union[QuoteInfoV2, List[QuoteInfoV2]]]:
+def get_random_quote(
+        group_id: int,
+        filter: Callable[[QuoteInfoV2], bool] = lambda quote: True,
+        list_num: Optional[int] = None,
+        update_showtime: bool = True,
+    ) -> Optional[Union[QuoteInfoV2, List[QuoteInfoV2]]]:
     """
     随机获取语录
 
@@ -84,6 +89,7 @@ def get_random_quote(group_id: int, filter: Callable[[QuoteInfoV2], bool] = lamb
     `filter`: 过滤函数，返回 True 的语录会被选中
     `list_num`: 随机获取的语录数量，默认 None 表示选取一条并返回单独的语录对象，否则返回列表
     `update_showtime`: 是否更新语录展示次数，默认 True
+    `transform_comments_type`: 是否转换评论类型到字典，默认 True
     """
     quotes = get_typed_quote_list(group_id, filter)
     if not quotes:
@@ -191,7 +197,7 @@ def get_formatted_quote_list(quotes: List[QuoteInfoV2]) -> Dict[str, Any]:
                 case 0:
                     is_comment_show = False
                 case 1:
-                    is_comment_show = quote.comments and quote.comments[0].author_id != ID_AI
+                    is_comment_show = quote.comments != [] and quote.comments[-1].author_id != ID_AI
                 case 2:
                     is_comment_show = quote.comments != []
                 case _:
@@ -201,7 +207,7 @@ def get_formatted_quote_list(quotes: List[QuoteInfoV2]) -> Dict[str, Any]:
             if is_comment_show:
                 boxes.append({
                         "quote": f"{i * cfg.quote_list_num_perpage + j + 1}. {quote.quote}",
-                        "comment": f"{quote.comments[-1]}",
+                        "comment": f"{quote.comments[-1].content}",
                         "comment_author_name": f"{quote.comments[-1].author_name}",
                     })
             else:

@@ -23,11 +23,11 @@ async def f_listener(event: GroupME, bot: Bot):
 rank_alias = {"语录排行", "quote_rank", "语录信息", "quote_info"}
 matcher_rank = on_command("语录rank", aliases=rank_alias, priority=10, block=True, permission=quote_permission) # type: ignore
 @matcher_rank.handle()
-async def f_rank(event: GroupME):
+async def f_rank(event: GroupME, arg: Message = CommandArg()):
     """
     语录排行
     """
-    key = event.get_plaintext().strip()
+    key = arg.extract_plain_text().strip()
     num_topn = cfg.max_rank_show
     if key.isdigit() and 0 < int(key) <= cfg.max_rank_show:
         num_topn = int(key)
