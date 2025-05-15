@@ -1,10 +1,12 @@
 <!-- 
     语录卡片模板
+    - quote_id: 语录ID
     - quote: 语录内容
     - author_name: 作者姓名
     - comments: 评论
         - content: 评论内容
         - author_name: 评论作者姓名
+        - comment_id: 评论ID
     - color: 卡片颜色
 -->
 
@@ -22,7 +24,7 @@
             --card-color: {{ color | default('#4a6fa5') }};
         "></div>
 
-            <div class="quote-id">{{ id }}</div>
+            <div class="quote-id">{{ quote_id }}</div>
             <p class="quote-text">{{ quote }}</p>
             <div class="quote-author">
                 <span class="author-name">—— {{ author_name }}</span>
@@ -37,7 +39,7 @@
                         <span class="author-name">◸{{ comment.author_name }}◿</span>
                     </div>
                     {% endif %}
-                    <div class="comment-id">{{ comment.id }}</div>
+                    <div class="comment-id">{{ comment.comment_id }}</div>
                 </div>
                 {% endfor %}
             </div>

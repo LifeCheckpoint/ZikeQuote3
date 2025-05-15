@@ -4,7 +4,6 @@
 
 from ..imports import *
 from ..interface.message_handle import (
-    pick_received_msg,
     add_mapping,
 )
 from ..interface.quote_handle import (
@@ -14,17 +13,6 @@ from ..interface.quote_handle import (
     get_formatted_quote_list
 )
 from ..utils.hitokoto import get_hitokoto
-
-
-matcher_listener = on_message(priority=15, block=False, permission=quote_permission)
-@matcher_listener.handle()
-async def f_listener(event: GroupME, bot: Bot):
-    """
-    监听群组消息，处理可能的语录收集
-    """
-    success = await pick_received_msg(event, bot)
-    if success == False:
-        print("自动语录收集失败，可能需要检查相关配置")
 
 
 random_quote_alias = {"quote", "随机语录"}
@@ -45,7 +33,7 @@ async def f_random_quote(event: GroupME, bot: Bot):
         await mfinish(matcher_random_quote, msg_quote_not_found, key=key)
     else:
         send_msg = await msend(matcher_random_quote, msg_send_quote, author=result.author_name, quote=result.quote)
-        add_mapping(event.group_id, send_msg.message_id, result.id)
+        add_mapping(event.group_id, send_msg.message_id, result.quote_id)
 
 
 quote_card_alias = {"语录图", "quote_card", "语录card", "语录图片"}
@@ -69,7 +57,7 @@ async def f_quote_card(event: GroupME):
         try:
             image_data = await full_render_html(cfg.path.templates / "card.html", cfg.path.templates, data=asdict(result), width=430, height=150)
             send_msg = await matcher_quote_card.send(MsgSeg.image(image_data))
-            add_mapping(event.group_id, send_msg.message_id, result.id)
+            add_mapping(event.group_id, send_msg.message_id, result.quote_id)
         except Exception as e:
             print(f"生成语录卡失败：{e}")
             await mfinish(matcher_quote_card, msg_quote_card_failed, error=str(e))

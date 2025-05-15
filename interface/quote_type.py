@@ -24,13 +24,13 @@ class QuoteV2Comment:
     content: str # 评论内容
     author_id: int # 评论作者 ID
     author_name: str # 评论作者名称 
-    id: Optional[int] = -1 # 评论 ID
+    comment_id: Optional[int] = -1 # 评论 ID
     time_stamp: Optional[int] = -1 # 评论时间戳
     ext_data: Optional[Dict] = None
 
 @dataclass
 class QuoteInfoV2:
-    id: int # 语录 ID，通常为被收录的消息 ID
+    quote_id: int # 语录 ID，通常为被收录的消息 ID
     author_id: int # 作者 ID
     author_name: str # 作者名称
     author_card: str # 群名片
@@ -55,14 +55,14 @@ class QuoteManager:
         # V1 语录转换为 V2
         if isinstance(quote, QuoteInfoV1):
             quote_latest = QuoteInfoV2(
-                id = hash(str(quote.from_id) + quote.quote + str(quote.time_stamp)),
+                quote_id = hash(str(quote.from_id) + quote.quote + str(quote.time_stamp)),
                 author_id = quote.from_id,
                 author_name = quote.from_name,
                 author_card = quote.from_name,
                 time_stamp = quote.time_stamp,
                 quote = quote.quote,
                 comments = [QuoteV2Comment(
-                    id = hash(quote.reason + str(quote.time_stamp)),
+                    comment_id = hash(quote.reason + str(quote.time_stamp)),
                     content = quote.reason,
                     author_id = ID_AI,
                     author_name = "AI",
@@ -96,8 +96,8 @@ class QuoteManager:
         `quote_id`: 语录 ID
         `comment`: 评论内容
         """
-        if comment.id == None or comment.id == -1:
-            comment.id = hash(comment.content + str(comment.time_stamp))
+        if comment.comment_id == None or comment.comment_id == -1:
+            comment.comment_id = hash(comment.content + str(comment.time_stamp))
         
         for quote in self.quote_list:
             if quote["quote_id"] == quote_id:
@@ -115,7 +115,7 @@ class QuoteManager:
         for quote in self.quote_list:
             if quote["quote_id"] == quote_id:
                 for comment in quote["comments"]:
-                    if comment["id"] == comment_id:
+                    if comment["comments_id"] == comment_id:
                         quote["comments"].remove(comment)
                         return True
         return False

@@ -31,6 +31,7 @@ class Config(BaseModel):
     """
     enable: bool = False # 启用插件
     enable_auto_collect: bool = True # 启用自动收集
+    enable_advanced_search: bool = True # 允许高级查找
     quote_managers: list[int] = [2435206827] # 管理员
     pickup_interval: int = 80 # 语录收集间隔
     msg_max_length: int = 35 # 允许被处理的最大消息长度

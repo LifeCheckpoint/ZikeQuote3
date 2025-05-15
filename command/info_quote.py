@@ -1,6 +1,24 @@
 from ..imports import *
-from ..interface.message_handle import get_typed_message_list
+from ..interface.message_handle import (
+    pick_received_msg,
+    get_typed_message_list,
+)
 from ..interface.quote_handle import get_quote_rank
+
+
+matcher_listener = on_message(priority=15, block=False, permission=quote_permission)
+@matcher_listener.handle()
+async def f_listener(event: GroupME, bot: Bot):
+    """
+    监听群组消息，处理可能的语录收集
+    """
+    if not cfg.enable_auto_collect:
+        return
+    
+    success = await pick_received_msg(event, bot)
+    if success == False:
+        print("自动语录收集失败，可能需要检查相关配置")
+
 
 rank_alias = {"语录排行", "quote_rank", "语录信息", "quote_info"}
 matcher_rank = on_command("语录rank", aliases=rank_alias, priority=10, block=True, permission=quote_permission) # type: ignore

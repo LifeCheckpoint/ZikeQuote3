@@ -1,5 +1,5 @@
 from ..imports import *
-from .quote_type import QuoteManager, QuoteInfoV2, ID_AI
+from .quote_type import QuoteManager, QuoteInfoV2, QuoteV2Comment, ID_AI
 from ..utils.colors import generate_color_palette
 
 def get_quote_file(group_id: int) -> str:
@@ -13,6 +13,15 @@ def add_quote(group_id: int, quote: QuoteInfoV2):
     quote_manager = QuoteManager(get_quote_file(group_id))
     with quote_manager:
         quote_manager.add_quote(quote)
+
+def add_comment(group_id: int, quote_id: int, comment: QuoteV2Comment) -> bool:
+    """
+    添加评论到指定语录
+    """
+    quote_manager = QuoteManager(get_quote_file(group_id))
+    with quote_manager:
+        success = quote_manager.add_comment(quote_id, comment)
+    return success
 
 def remove_quote(group_id: int, quote_id: int) -> bool:
     """
@@ -50,7 +59,7 @@ def calculate_weight(quotes: List[QuoteInfoV2], filter: Callable[[QuoteInfoV2], 
     weights = {}
     min_show_time = abs(min(quote.show_time for quote in filtered_quotes))
     for quote in filtered_quotes:
-        weights[quote.id] = (1 / (quote.show_time - min_show_time + 1)) ** cfg.weight_p_transform
+        weights[quote.quote_id] = (1 / (quote.show_time - min_show_time + 1)) ** cfg.weight_p_transform
     
     total_weight = sum(weights.values())
     for id, weight in weights.items():
@@ -101,9 +110,9 @@ def get_random_quote(group_id: int, filter: Callable[[QuoteInfoV2], bool] = lamb
         qm = QuoteManager(get_quote_file(group_id))
         with qm:
             if isinstance(result, QuoteInfoV2):
-                qm.update_show_time(result.id)
+                qm.update_show_time(result.quote_id)
             else:
-                for quote in result: qm.update_show_time(quote.id)
+                for quote in result: qm.update_show_time(quote.quote_id)
 
     return result
 

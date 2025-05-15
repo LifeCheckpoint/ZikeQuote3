@@ -50,10 +50,7 @@ async def pick_received_msg(event: GroupME, bot: Bot) -> Optional[bool]:
     监听群组消息，处理可能的语录收集
 
     `return`: None: 已收集但未处理，False: 处理失败，True: 处理成功
-    """
-    if not cfg.enable_auto_collect:
-        return
-    
+    """    
     if not validate_msg(event):
         return
 
@@ -146,7 +143,7 @@ async def LLM_quote_pickup(group_id: int, message_list: List[ChatMessageV3]) -> 
 
         with qm:
             qm.add_quote(QuoteInfoV2(
-                id=target_quote_id,
+                quote_id=target_quote_id,
                 author_id=message_data.source_user_id,
                 author_name=message_data.source_user_name,
                 author_card=message_data.source_user_nickname,
