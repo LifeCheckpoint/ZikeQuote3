@@ -28,9 +28,6 @@ from ..json_data_manager.utils import get_json_ver_info, set_json_ver_info
 require("msg_text")
 from ..msg_text import msend, mfinish
 
-require("llm_base")
-from ..llm_base import get_openai_client
-
 from .config import Config
 cfg = get_plugin_config(Config)
 

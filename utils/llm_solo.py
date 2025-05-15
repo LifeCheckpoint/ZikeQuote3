@@ -3,6 +3,9 @@ LLM 调用相关函数
 """
 from ..imports import *
 
+def get_openai_client(model: str):
+    pass
+
 async def llm_solo(content: str, attempt_num: int = 3) -> Optional[str]:
     """
     LLM 单次调用，使用 deepseek-chat，温度 0.2
