@@ -2,7 +2,7 @@ from ..imports import *
 from ..utils.old_quote_api import *
 
 old_quote_aliases = {"lt语录", "lt_quote", "老语录", "oldquote", "旧语录", "LT语录"}
-matcher_old_quote = on_command("老语录", aliases=old_quote_aliases, priority=10, block=True, permission=quote_permission)
+matcher_old_quote = on_command("老语录", aliases=old_quote_aliases, priority=10, block=True, permission=quote_permission) # type: ignore
 @matcher_old_quote.handle()
 async def _(args: Message = CommandArg()):
     """

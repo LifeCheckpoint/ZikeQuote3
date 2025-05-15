@@ -1,6 +1,6 @@
 <!-- 
     语录列表模板
-    - author: 语录作者
+    - title: 列表标题
     - description: 语录信息描述
     - addition: 附加信息
     - sections: 分页语录列表
@@ -17,13 +17,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>来自{{ author }}的语录</title>
+    <title>{{ title }}</title>
     <link rel="stylesheet" href="list.css">
 </head>
 <body>
     <div class="page-container">
         <header class="page-header">
-            <h1>来自{{ author }}的语录</h1>
+            <h1>{{ title }}</h1>
             <span class="version">{{ description }}</span>
             <p class="description">{{ addition }}</p>
         </header>
@@ -36,8 +36,10 @@
                     {% for box in section.boxes %}
                     <div class="content-box">
                         <h3 class="box-title">{{ box.quote }}</h3>
+                        {% if box.comment %}
                         <p class="box-description">{{ box.comment }}</p>
-                        {% if box.comment_author_name %}
+                        {% endif %}
+                        {% if box.comment_author_name and box.comment %}
                         <div class="reason-author-container">
                             <span class="reason-author">◸{{ box.comment_author_name }}◿</span>
                         </div>

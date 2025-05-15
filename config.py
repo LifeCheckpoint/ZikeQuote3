@@ -30,6 +30,7 @@ class Config(BaseModel):
     Quote V3 插件配置
     """
     enable: bool = False # 启用插件
+    enable_auto_collect: bool = True # 启用自动收集
     quote_managers: list[int] = [2435206827] # 管理员
     pickup_interval: int = 80 # 语录收集间隔
     msg_max_length: int = 35 # 允许被处理的最大消息长度
@@ -37,6 +38,10 @@ class Config(BaseModel):
     weight_p_transform: float = 1.2 # 权重幂变换参数，越小越平滑，越大越容易选到高权重语录
     enable_duplicate: bool = False # 是否允许个人语录重复收录
     max_rank_show: int = 40 # 排行榜允许显示的最大人数
+    quote_list_num_perpage: int = 20 # 语录列表每页显示的数量
+    quote_list_page_limit: int = 4 # 语录列表允许显示的最大页数，超出将不显示之前的页数
+    quote_list_show_comment: int = 2 # 语录列表显示评论模式，0: 不显示，1: 显示最新评论（不包括自动生成），2: 显示最新评论（包括自动生成）
+    hitokoto_url: str = "https://v1.hitokoto.cn/" # 获取名人名言的 Hitokoto API 地址
 
     path: PathConfig = PathConfig()
     permission: PermissionConfig = PermissionConfig()

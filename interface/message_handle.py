@@ -45,7 +45,15 @@ def get_mapping(group_id: int, message_id: int) -> Optional[int]:
     state = HistoryQuoteState(get_mapping_file(group_id))
     return state.get_mapping(message_id)
 
-async def pick_received_msg(event: GroupME, bot: Bot):
+async def pick_received_msg(event: GroupME, bot: Bot) -> Optional[bool]:
+    """
+    监听群组消息，处理可能的语录收集
+
+    `return`: None: 已收集但未处理，False: 处理失败，True: 处理成功
+    """
+    if not cfg.enable_auto_collect:
+        return
+    
     if not validate_msg(event):
         return
 

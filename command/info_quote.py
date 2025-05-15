@@ -3,7 +3,7 @@ from ..interface.message_handle import get_typed_message_list
 from ..interface.quote_handle import get_quote_rank
 
 rank_alias = {"语录排行", "quote_rank", "语录信息", "quote_info"}
-matcher_rank = on_command("语录rank", aliases=rank_alias, priority=10, block=True, permission=quote_permission)
+matcher_rank = on_command("语录rank", aliases=rank_alias, priority=10, block=True, permission=quote_permission) # type: ignore
 @matcher_rank.handle()
 async def f_rank(event: GroupME):
     """
