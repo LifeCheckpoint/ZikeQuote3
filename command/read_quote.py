@@ -86,7 +86,8 @@ async def f_quote_list(event: GroupME, arg: Message = CommandArg()):
     if len(author_id_set) > 1:
         await mfinish(matcher_quote_list, msg_quote_list_ambiguous, key=key, num=len(author_id_set))
 
-    # 获取用户所有格式化的语录列表
+    # 重新获取用户所有格式化的语录列表
+    quotes = get_typed_quote_list(event.group_id, filter=lambda quote: quote.author_id in author_id_set)
     data = get_formatted_quote_list(quotes)
     author = quotes[0].author_name if quotes else key
 
