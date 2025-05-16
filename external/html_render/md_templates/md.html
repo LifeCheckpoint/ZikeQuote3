@@ -1,0 +1,58 @@
+<!-- 
+    渲染 Markdown 内容模板
+    content: 要渲染的 Markdown 内容，注意扩展正确性
+
+    另外，需要保证该模板依赖文件正确
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Markdown 文档</title>
+    <link rel="stylesheet" href="katex.min.css">
+    <link rel="stylesheet" href="md.css">
+    <script src="katex.min.js"></script>
+    <script src="auto-render.min.js"></script>
+</head>
+<body>
+    <div id="preview">
+        {{ content|safe }}
+    </div>
+
+    <script>
+        // 转换arithmatex格式为KaTeX可识别的格式
+        function convertArithmatexToKatex() {
+            document.querySelectorAll('.arithmatex').forEach(el => {
+                const texScript = el.querySelector('script[type="math/tex"]');
+                if (texScript) {
+                    const texContent = texScript.textContent;
+                    const isDisplayMode = texScript.previousElementSibling?.classList.contains('MathJax_Preview');
+                    
+                    // 创建KaTeX兼容的span
+                    const katexSpan = document.createElement('span');
+                    katexSpan.textContent = `$${texContent}$`;
+                    
+                    // 替换原有内容
+                    el.innerHTML = '';
+                    el.appendChild(katexSpan);
+                }
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            convertArithmatexToKatex();
+
+            renderMathInElement(document.getElementById('preview'), {
+
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false},
+                    {left: '\$', right: '\$', display: false},
+                    {left: '\$$', right: '\$$', display: true}
+                ],
+                throwOnError: false
+            });
+        });
+    </script>
+</body>
+</html>

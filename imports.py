@@ -19,14 +19,14 @@ import requests
 from .interface.permission import quote_permission
 
 require("html_render")
-from ..html_render import full_render_html, template
+from .external.html_render import full_render_html, template
 
 require("json_data_manager")
-from ..json_data_manager import ChatHistoryManager, ChatMessageV3, JsonIO
-from ..json_data_manager.utils import get_json_ver_info, set_json_ver_info
+from .external.json_data_manager import ChatHistoryManager, ChatMessageV3, JsonIO
+from .external.json_data_manager.utils import get_json_ver_info, set_json_ver_info
 
 require("msg_text")
-from ..msg_text import msend, mfinish
+from .external.msg_text import msend, mfinish
 
 from .config import Config
 cfg = get_plugin_config(Config)

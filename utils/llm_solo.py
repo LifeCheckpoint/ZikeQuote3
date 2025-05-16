@@ -2,9 +2,17 @@
 LLM 调用相关函数
 """
 from ..imports import *
+from pathlib import Path
+from openai import AsyncOpenAI
 
-def get_openai_client(model: str):
-    pass
+def get_openai_client(model_name: str) -> AsyncOpenAI:
+    """
+    获取 OpenAI 客户端实例
+    """
+    return AsyncOpenAI(
+        base_url="",
+        api_key=(Path(__file__).parent / "api_key").read_text().strip(),
+    )
 
 async def llm_solo(content: str, attempt_num: int = 3) -> Optional[str]:
     """

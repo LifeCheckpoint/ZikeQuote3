@@ -1,0 +1,179 @@
+body {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    background-color: #f4f7f6;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+#preview {
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+    padding: 30px;
+    margin-top: 20px;
+    max-width: 800px;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-wrap: break-word;
+}
+
+#title {
+    color: #333;
+    /* text-align: center; /* 移除居中对齐 */
+    margin-bottom: 30px;
+    font-size: 2em;
+    font-weight: 600;
+    /* 确保标题在卡片左上方 */
+    text-align: left; /* 靠左对齐 */
+    margin-top: 0; /* 移除顶部外边距，让它更靠近卡片顶部 */
+}
+
+
+/* 调整Markdown内容样式 (与之前相同，此处省略以保持简洁) */
+#preview h1,
+#preview h2,
+#preview h3,
+#preview h4,
+#preview h5,
+#preview h6 {
+    color: #007bff;
+    margin-top: 25px;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+#preview h1 { font-size: 1.8em; }
+#preview h2 { font-size: 1.5em; }
+#preview h3 { font-size: 1.3em; }
+#preview h4 { font-size: 1.1em; }
+#preview h5 { font-size: 1em; }
+#preview h6 { font-size: 0.9em; }
+
+
+#preview p {
+    margin-bottom: 15px;
+}
+
+/* 自定义紫色样式 */
+#preview strong, #preview em, #preview u {
+    color: #8a2be2; /* 紫色 */
+}
+
+#preview strong {
+    font-weight: 600; /* 比默认稍轻的粗体 */
+}
+
+#preview em {
+    font-style: italic;
+    font-weight: 500; /* 适中的倾斜 */
+}
+
+#preview u {
+    text-decoration: underline;
+    text-decoration-color: #8a2be2; /* 紫色下划线 */
+    font-weight: 400; /* 常规粗细 */
+    text-underline-offset: 0.15em;
+    text-decoration-thickness: 2px; /* 下划线粗细 */
+}
+
+#preview del {
+    color: #888;
+}
+
+#preview ul,
+#preview ol {
+    margin-bottom: 15px;
+    padding-left: 20px;
+}
+
+#preview li {
+    margin-bottom: 8px;
+}
+
+
+pre {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin-bottom: 20px;
+    border: 1px solid #e9ecef;
+}
+
+code {
+    font-family: 'Fira Code', 'Consolas', 'Monaco', 'Andale Mono', 'Ubuntu Mono', monospace;
+    font-size: 0.95em;
+    color: #333;
+}
+
+blockquote {
+    border-left: 4px solid #007bff;
+    padding: 10px 15px;
+    color: #555;
+    margin: 15px 0;
+    background-color: #e9ecef;
+    border-radius: 4px;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+th, td {
+    border: 1px solid #dee2e6;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background-color: #e9ecef;
+    font-weight: 600;
+}
+
+tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+.katex {
+    font-size: 1.1em;
+    color: #333;
+}
+
+.MathJax_Preview {
+    color: #888;
+    font-style: italic;
+}
+
+#preview img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 10px auto;
+    border-radius: 8px;
+}
+
+#preview a {
+    color: #007bff;
+    text-decoration: none;
+    transition: color 0.2s ease-in-out;
+}
+
+#preview li > p {
+    margin-bottom: 0;
+}
+
+#preview li > ul,
+#preview li > ol {
+    margin-top: 8px;
+    margin-bottom: 0;
+}
