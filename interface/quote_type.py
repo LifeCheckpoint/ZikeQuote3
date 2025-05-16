@@ -85,6 +85,11 @@ class QuoteManager:
         else:
             quote_latest = quote
         
+        # 检查重复 ID
+        for q in self.quote_list:
+            if q["quote_id"] == quote_latest.quote_id:
+                raise ValueError(f"语录 ID 重复: {quote_latest.quote_id}")
+
         self.quote_list.append(asdict(quote_latest))
 
     def remove_quote(self, quote_id: int):

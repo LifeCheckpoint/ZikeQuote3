@@ -17,6 +17,7 @@ import random
 import requests
 
 from .interface.permission import quote_permission
+from .utils.async_tools import serial_execution, async_modify_lock
 
 require("html_render")
 from ..html_render import full_render_html, template

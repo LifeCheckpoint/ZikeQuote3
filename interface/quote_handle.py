@@ -89,13 +89,12 @@ def get_random_quote(
     `filter`: 过滤函数，返回 True 的语录会被选中
     `list_num`: 随机获取的语录数量，默认 None 表示选取一条并返回单独的语录对象，否则返回列表
     `update_showtime`: 是否更新语录展示次数，默认 True
-    `transform_comments_type`: 是否转换评论类型到字典，默认 True
     """
     quotes = get_typed_quote_list(group_id, filter)
     if not quotes:
         return None
     
-    weights = calculate_weight(quotes, filter)
+    weights = calculate_weight(quotes)
     if not weights:
         return None
     
