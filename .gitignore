@@ -10,3 +10,6 @@ __pycache__/
 *.whl
 *.mypy_cache
 *.pytest_cache
+
+# external folder
+external/
