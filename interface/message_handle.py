@@ -66,18 +66,19 @@ async def pick_received_msg(event: GroupME, bot: Bot) -> Optional[bool]:
     msg_file_name = get_msg_file_name(group_id)
 
     # 更新群组消息记录文件，完成后保存
-    chat = ChatHistoryManager(__plugin_meta__.name, "history", msg_file_name)
-    with chat:
-        chat.add_message(ChatMessageV3(
-            message_id=msg_id,
-            source_group_id=group_id,
-            source_group_name=group_name,
-            source_user_id=user_id,
-            source_user_name=user_name,
-            source_user_nickname=user_group_nickname,
-            time_stamp=time_stamp,
-            message=event.get_plaintext().strip()
-        ))
+    async with async_modify_lock:
+        chat = ChatHistoryManager(__plugin_meta__.name, "history", msg_file_name)
+        with chat:
+            chat.add_message(ChatMessageV3(
+                message_id=msg_id,
+                source_group_id=group_id,
+                source_group_name=group_name,
+                source_user_id=user_id,
+                source_user_name=user_name,
+                source_user_nickname=user_group_nickname,
+                time_stamp=time_stamp,
+                message=event.get_plaintext().strip()
+            ))
 
     # 到达条数，触发更新并尝试清空
     if len(chat.get_messages()) >= cfg.pickup_interval:
@@ -88,13 +89,16 @@ async def read_msg_and_pickup(group_id: int) -> bool:
     chat = ChatHistoryManager(__plugin_meta__.name, "history", get_msg_file_name(group_id))
     chat.load_from_file()
     result = await LLM_quote_pickup(group_id, chat.get_typed_messages())
-    with chat:
-        if result:
-            chat.clear_messages()
-        else:
-            chat.clip_messages(cfg.pickup_interval - 1)
+
+    if result:
+        chat.clear_messages()
+    else:
+        chat.clip_messages(cfg.pickup_interval - 1)
+    chat.save_to_file()
+    
     return result
 
+@serial_execution
 async def LLM_quote_pickup(group_id: int, message_list: List[ChatMessageV3]) -> bool:
     """调用 LLM 进行语录筛选提取"""
     if len(message_list) == 0:
@@ -123,44 +127,50 @@ async def LLM_quote_pickup(group_id: int, message_list: List[ChatMessageV3]) -> 
         return False
     
     print(f"收集到 {result['num_quotes']} 条语录")
-    for quote in result["quotes"]:
-        # 获取 id
-        target_quote_id = quote.get("id", -1)
 
-        # 根据 id 查找消息
-        message_data = next((msg for msg in message_list if str(msg.message_id) == str(target_quote_id)), None)
-        if message_data is None:
-            print(f"[Warning] 消息数据未找到: {target_quote_id}")
-            continue
-
-        # 添加语录
+    # 添加语录
+    async with async_modify_lock:
         qm = QuoteManager(get_quote_file(group_id))
+        qm.load_from_file()
+        
+        for quote in result["quotes"]:
+            quote: dict
 
-        # 检查重复
-        if not cfg.enable_duplicate:
-            duplicate_quote = [
-                qu for qu in qm.get_typed_quotes()
-                if qu.quote.strip() == quote["quote"].strip()
-                and qu.author_id == message_data.source_user_id
-            ]
-            if len(duplicate_quote) > 0:
-                print(f"[Warning] 语录重复，跳过: {quote["quote"]}")
+            # 获取 id
+            target_msg_match_id = quote.get("id", -1)
+
+            # 根据 id 查找消息
+            message_data = next((msg for msg in message_list if str(msg.message_id) == str(target_msg_match_id)), None)
+            if message_data is None:
+                print(f"[Warning] 消息数据未找到: {target_msg_match_id}")
                 continue
 
-        with qm:
+            # 检查重复
+            if not cfg.enable_duplicate:
+                duplicate_quote = [
+                    qu for qu in qm.get_typed_quotes()
+                    if qu.quote.strip() == quote["quote"].strip()
+                    and qu.author_id == message_data.source_user_id
+                ]
+                if len(duplicate_quote) > 0:
+                    print(f"[Warning] 语录重复，跳过: {quote["quote"]}")
+                    continue
+
             qm.add_quote(QuoteInfoV2(
-                quote_id=target_quote_id,
+                quote_id=target_msg_match_id,
                 author_id=message_data.source_user_id,
                 author_name=message_data.source_user_name,
                 author_card=message_data.source_user_nickname,
                 time_stamp=message_data.time_stamp,
                 quote=quote["quote"],
             ))
-            qm.add_comment(target_quote_id, QuoteV2Comment(
+            qm.add_comment(target_msg_match_id, QuoteV2Comment(
                 content = quote["comment"],
                 author_id = COMMENT_AUTHOR_AI,
                 author_name = "AI",
                 time_stamp=message_data.time_stamp
             ))
+
+        qm.save_to_file()
 
     return True
