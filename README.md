@@ -31,8 +31,8 @@ ZikeQuote3 基于 NoneBot 开发，便于群聊语录自动收集与管理，支
 
 ## 🔧 安装
 
-1. 确保您已经安装了 NoneBot2，然后安装插件本体
-    <details open>
+1. 确保您已经安装了 NoneBot2，然后安装插件本体（目前暂时仅支持手动安装）
+    <details close>
     <summary>手动安装</summary>
     下载该仓库后，进入命令行并使用
 
@@ -41,7 +41,7 @@ ZikeQuote3 基于 NoneBot 开发，便于群聊语录自动收集与管理，支
     以安装 `pyproject.toml` 依赖
     </details>
 
-    <details open>
+    <details close>
     <summary>使用 nb-cli 安装</summary>
     在 nonebot2 项目的根目录下打开命令行, 输入以下指令即可安装
 
@@ -53,7 +53,7 @@ ZikeQuote3 基于 NoneBot 开发，便于群聊语录自动收集与管理，支
     <summary>使用包管理器安装</summary>
     在 nonebot2 项目的插件目录下, 打开命令行, 根据你使用的包管理器, 输入相应的安装命令
 
-    <details>
+    <details close>
     <summary>pip</summary>
 
         pip install nonebot-plugin-ZikeQuote3
@@ -82,13 +82,13 @@ ZikeQuote3 基于 NoneBot 开发，便于群聊语录自动收集与管理，支
 
 </details>
 
-1. 确保系统安装 Node.js，安装截图相关后端及其依赖。
+2. 确保系统安装 Node.js，安装截图相关后端及其依赖。
     ```bash
     cd your/bot/plugins/external/html_render/
     npm install
     ```
-2. 在 `utils/api_key` 配置 OpenAI API Key，或自行修改 `utils/llm_solo.py` 使用自定义模型与参数
-3. 在 `config.py` 进行插件相关配置，详见“⚙ 配置”
+3. 在 `utils/api_key` 配置 OpenAI API Key，或自行修改 `utils/llm_solo.py` 使用自定义模型与参数
+4. 在 `config.py` 进行插件相关配置，详见“⚙ 配置”
 
 ## ⚙ 配置
 
@@ -110,7 +110,7 @@ ZikeQuote3 基于 NoneBot 开发，便于群聊语录自动收集与管理，支
 | `max_rank_show` | `int` | `40` | 排行榜允许显示的最大人数 |
 | `quote_list_num_perpage` | `int` | `20` | 语录列表每页显示的数量 |
 | `quote_list_page_limit` | `int` | `4` | 语录列表允许显示的最大页数，超出将不显示之前的页数 |
-| `quote_list_show_comment` | `int` | `1` | 语录列表显示评论模式，0: 不显示，1: 显示最新评论（不包括自动生成），2: 显示最新评论（包括自动生成） |
+| `quote_list_show_comment` | `int` | `1` | 语录列表显示评论模式<br>0: 不显示<br>1: 显示最新评论（不包括自动生成）<br>2: 显示最新评论（包括自动生成） |
 | `hitokoto_url` | `str` | `"https://v1.hitokoto.cn/"` | 获取名人名言的 Hitokoto API 地址 |
 
 ### PermissionConfig
@@ -155,13 +155,13 @@ ZikeQuote3 基于 NoneBot 开发，便于群聊语录自动收集与管理，支
     - 提取出的语录和评论会被添加到语录库中。
 
 - **语录处理**:
-    - 语录的添加、删除和评论等操作通过 `interface/quote_handle.py` 中的函数实现，直接操作对应的 JSON 数据文件。
+    - 语录收集通过 `external/json_data_manager/chat_history_data.py` 收集历史信息实现
+    - 语录的添加、删除和评论等操作通过直接操作群聊对应 JSON 数据文件。
     - 随机语录的选取采用了基于展示次数的简单权重算法 `interface/quote_handle.py::calculate_weight`。
 
 - **HTML 渲染**:
-    - 插件利用外部的 HTML 渲染模块 `external/html_render/` 将语录排行榜、语录卡片和语录列表等信息渲染成图片。
-    - 渲染过程通过 Python 调用 Node.js 脚本 `external/html_render/screenshot.py` 调用 `external/html_render/screenshot.js` 实现。
-    - Node.js 脚本使用 Puppeteer 库来控制无头浏览器加载本地 HTML 模板文件 `templates/` 目录，并进行截图。
+    - 插件利用 `external/html_render/` 渲染图片。
+    - 渲染通过 Python 调用 Node.js 脚本 `external/html_render/screenshot.js`，使用 Puppeteer 库来控制无头浏览器加载本地 HTML 模板文件 `templates/` 目录，并进行截图。
 
 - **消息文本管理**:
     - 插件的消息回复文本通过 `external/msg_text/msg.py` 进行管理。
