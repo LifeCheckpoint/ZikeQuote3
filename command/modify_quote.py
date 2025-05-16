@@ -34,7 +34,6 @@ async def f_update_quote(event: GroupME):
 add_quote_alias = {"add_quote", "quote_add", "添加语录", "新增语录", "语录添加"}
 matcher_add_quote = on_command("加语录", aliases=add_quote_alias, priority=10, block=True, permission=quote_permission) # type: ignore
 @matcher_add_quote.handle()
-@serial_execution
 async def f_add_quote(event: GroupME, bot: Bot):
     """
     添加语录
@@ -74,7 +73,6 @@ async def f_add_quote(event: GroupME, bot: Bot):
 remove_quote_alias = {"remove_quote", "quote_remove", "删除语录", "语录删除"}
 matcher_remove_quote = on_command("删语录", aliases=remove_quote_alias, priority=10, block=True, permission=quote_permission) # type: ignore
 @matcher_remove_quote.handle()
-@serial_execution
 async def f_remove_quote(event: GroupME, bot: Bot, arg: Message = CommandArg()):
     """
     删除语录
@@ -115,7 +113,6 @@ async def f_remove_quote(event: GroupME, bot: Bot, arg: Message = CommandArg()):
 comment_quote_alias = {"quote_comment", "评论语录", "评价语录", "评"}
 matcher_comment_quote = on_command("评语录", aliases=comment_quote_alias, priority=10, block=True, permission=quote_permission) # type: ignore
 @matcher_comment_quote.handle()
-@serial_execution
 async def f_comment_quote(event: GroupME, bot: Bot, arg: Message = CommandArg()):
     """
     评论语录
