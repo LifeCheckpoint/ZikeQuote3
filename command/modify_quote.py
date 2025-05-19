@@ -6,6 +6,7 @@ from ..imports import *
 from ..interface.quote_handle import (
     QuoteInfoV2,
     QuoteV2Comment,
+    get_typed_quote_list,
     add_quote,
     add_comment,
     remove_quote,
@@ -82,7 +83,7 @@ async def f_remove_quote(event: GroupME, bot: Bot, arg: Message = CommandArg()):
     2. `/删语录 语录ID`
     """
     # 判断权限
-    if event.sender not in cfg.quote_managers:
+    if is_quote_manager(event.sender.user_id):
         await mfinish(matcher_remove_quote, msg_no_permission, event="删语录")
     
     # 判断 reply
@@ -105,7 +106,7 @@ async def f_remove_quote(event: GroupME, bot: Bot, arg: Message = CommandArg()):
     # 删除语录
     result = remove_quote(event.group_id, quote_id)
     if result:
-        await mfinish(matcher_remove_quote, msg_remove_quote_success, author=get_group_member_cardname(event.group_id, event.sender.user_id or -1, bot))
+        await mfinish(matcher_remove_quote, msg_remove_quote_success)
     else:
         await mfinish(matcher_remove_quote, msg_remove_quote_failed)
 
@@ -145,3 +146,41 @@ async def f_comment_quote(event: GroupME, bot: Bot, arg: Message = CommandArg())
         await mfinish(matcher_comment_quote, msg_comment_quote_success)
     else:
         await mfinish(matcher_comment_quote, msg_comment_quote_failed)
+
+del_comment_alias = {"del_comment", "删除评论", "删除语录评论", "删除语录评价"}
+matcher_del_comment = on_command("删评论", aliases=del_comment_alias, priority=10, block=True, permission=quote_permission) # type: ignore
+@matcher_del_comment.handle()
+async def f_del_comment(event: GroupME, bot: Bot, arg: Message = CommandArg()):
+    """
+    删除评论
+
+    语录删除评论方式：
+    `/删评论 评论ID`
+
+    除管理员外，只有评论作者可以删除自己的评论
+    """
+    # 获取评论 ID
+    key = arg.extract_plain_text().strip()
+    if key == "":
+        await mfinish(matcher_del_comment, msg_remove_quote_reply_args_missing)
+        return
+    
+    if not key.isdigit():
+        await mfinish(matcher_del_comment, msg_remove_quote_id_invalid)
+        return
+    
+    # 判断权限
+    if is_quote_manager(event.sender.user_id):
+        filt: Callable[[QuoteInfoV2], bool] = lambda q: any([(comment.comment_id == int(key) and comment.author_id == event.sender.user_id) for comment in q.comments])
+        quotes = get_typed_quote_list(event.group_id, filter=filt)
+
+        if len(quotes) == 0:
+            await mfinish(matcher_del_comment, msg_no_permission, event="删评论")
+            return
+
+    # 删除评论
+    result = remove_quote(event.group_id, int(key))
+    if result:
+        await mfinish(matcher_del_comment, msg_remove_quote_success)
+    else:
+        await mfinish(matcher_del_comment, msg_remove_quote_failed)

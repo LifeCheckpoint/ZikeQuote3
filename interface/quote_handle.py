@@ -1,6 +1,6 @@
 from ..imports import *
 from .quote_type import QuoteManager, QuoteInfoV2, QuoteV2Comment, ID_AI
-from ..utils.colors import generate_color_palette
+from ..utils.formating import generate_color_palette
 
 def get_quote_file(group_id: int) -> str:
     """根据群组 ID 获取语录文件名"""

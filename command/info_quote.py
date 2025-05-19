@@ -1,4 +1,5 @@
 from ..imports import *
+from ..utils.formating import format_pydantic_config_markdown
 from ..interface.message_handle import (
     pick_received_msg,
     get_typed_message_list,
@@ -43,3 +44,29 @@ async def f_rank(event: GroupME, arg: Message = CommandArg()):
         await mfinish(matcher_rank, msg_rank_failed, error=str(e))
 
     await matcher_rank.finish(MsgSeg.image(image_data))
+
+
+setting_showing_alias = {"语录设置信息", "quote_setting", "语录配置", "quote_config", "查看语录设置", "查看语录配置"}
+matcher_setting_showing = on_command("语录设置", aliases=setting_showing_alias, priority=10, block=True, permission=quote_permission) # type: ignore
+@matcher_setting_showing.handle()
+async def f_setting_showing(event: GroupME):
+    """
+    显示语录设置，递归检查设置项并生成 Markdown 图片查看
+    """
+    # 检查权限
+    if not is_quote_manager(event.sender.user_id):
+        await mfinish(matcher_setting_showing, msg_no_permission, event="语录设置")
+        return
+    
+    # 获取设置项
+    config_md = format_pydantic_config_markdown(cfg)
+
+    # 生成 Markdown 图片
+    try:
+        image_data = await full_render_markdown(config_md)
+    except Exception as e:
+        print("生成语录配置失败：", e)
+        await mfinish(matcher_setting_showing, msg_quote_setting_showing_failed, error=str(e))
+
+    await matcher_setting_showing.finish(MsgSeg.image(image_data))
+    
