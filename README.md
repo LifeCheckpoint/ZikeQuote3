@@ -14,19 +14,19 @@ _✨ 一个 LLM 介入的群聊语录插件 ✨_
 
 ## 📖 介绍
 
-ZikeQuote3 基于 NoneBot 开发，便于群聊语录自动收集与管理，支持通过 LLM 自动收集群聊消息作为语录、手动管理语录、以及多种方式查看等功能。
+ZikeQuote3 基于 NoneBot2 开发，便于群聊语录自动收集与管理，支持通过 LLM 自动收集群聊消息作为语录、手动管理语录、以及多种方式查看等功能。
 
 ## 🗒️ 功能
 
 - **自动收集**: 监听群聊消息，当消息数量达到配置阈值时，自动触发 LLM 对消息历史进行筛选和提取，将符合条件的消收集为语录。
 - **手动管理**: 支持通过命令手动添加、删除和评论语录。
 - **语录排行**: 统计群组成员的语录数量，生成排行榜，并以图片形式展示。
-- **随机语录**: 随机获取一条语录，支持按关键词过滤，并根据语录的展示次数进行权重调整，使不常出现的语录有更高概率被选中。
+- **随机语录**: 随机获取一条语录，支持按关键词过滤，并根据语录的展示次数进行权重调整。
 - **语录卡片**: 将单条语录生成卡片图片，方便分享。
 - **语录列表**: 查看某个用户（默认为命令发送者）的语录列表，支持分页，并生成图片展示。
 - **语录搜索**: 搜索包含指定关键词的语录，并生成图片展示。
+- **语录评论**: 对已有语录添加评论。
 - **LLM 集成**: 利用 LLM 对消息历史进行智能分析，自动提取 1~3 条高质量语录并生成评论。
-- **HTML 渲染**: 使用 HTML 模板和外部渲染工具（Puppeteer）将语录信息渲染成图片输出。
 - **权限控制**: 支持基于群组 ID 的白名单或黑名单权限控制。
 
 ## 🔧 安装
@@ -45,7 +45,7 @@ ZikeQuote3 基于 NoneBot 开发，便于群聊语录自动收集与管理，支
     <summary>使用 nb-cli 安装</summary>
     在 nonebot2 项目的根目录下打开命令行, 输入以下指令即可安装
 
-        nb plugin install nonebot-plugin-ZikeQuote3
+        nb plugin install nonebot-plugin-zikequote3
 
     </details>
 
@@ -56,31 +56,29 @@ ZikeQuote3 基于 NoneBot 开发，便于群聊语录自动收集与管理，支
     <details close>
     <summary>pip</summary>
 
-        pip install nonebot-plugin-ZikeQuote3
+        pip install nonebot-plugin-zikequote3
     </details>
     <details>
     <summary>pdm</summary>
 
-        pdm add nonebot-plugin-ZikeQuote3
+        pdm add nonebot-plugin-zikequote3
     </details>
     <details>
     <summary>poetry</summary>
 
-        poetry add nonebot-plugin-ZikeQuote3
+        poetry add nonebot-plugin-zikequote3
     </details>
     <details>
     <summary>conda</summary>
 
-        conda install nonebot-plugin-ZikeQuote3
+        conda install nonebot-plugin-zikequote3
     </details>
 
     打开 nonebot2 项目根目录下的 `pyproject.toml` 文件, 在 `[tool.nonebot]` 部分追加写入
 
     ```toml
-    plugins = ["nonebot-plugin-ZikeQuote3"]
+    plugins = ["nonebot-plugin-zikequote3"]
     ```
-
-</details>
 
 2. 确保系统安装 Node.js，安装截图相关后端及其依赖。
     ```bash
@@ -94,40 +92,52 @@ ZikeQuote3 基于 NoneBot 开发，便于群聊语录自动收集与管理，支
 
 插件的配置项位于 `config.py` 文件中。您可以在 NoneBot2 项目的 `.env` 文件中覆盖这些配置。
 
-### Config
+### 全局配置 (Config)
 
 | 配置项 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `enable` | `bool` | `True` | 启用插件 |
-| `enable_auto_collect` | `bool` | `True` | 启用自动收集与 LLM 整理 |
-| `enable_advanced_search` | `bool` | `True` | 允许通过 LLM 高级查找（TODO） |
-| `quote_managers` | `list[int]` | `[]` | 管理 QQ 号列表 |
-| `pickup_interval` | `int` | `80` | 语录收集间隔（达到此消息数量触发自动收集） |
-| `msg_max_length` | `int` | `35` | 允许被处理的最大消息长度 |
-| `mapping_max_size` | `int` | `50` | 储存消息ID-语录ID映射的最大数量，用于回复消息映射 |
-| `weight_p_transform` | `float` | `1.2` | 随机语录算法的权重幂变换参数，越小越平滑，越大越容易选到高权重语录 |
-| `enable_duplicate` | `bool` | `False` | 是否允许个人语录重复收录 |
-| `max_rank_show` | `int` | `40` | 排行榜允许显示的最大人数 |
-| `quote_list_num_perpage` | `int` | `20` | 语录列表每页显示的数量 |
-| `quote_list_page_limit` | `int` | `4` | 语录列表允许显示的最大页数，超出将不显示之前的页数 |
-| `quote_list_show_comment` | `int` | `1` | 语录列表显示评论模式<br>0: 不显示<br>1: 显示最新评论（不包括自动生成）<br>2: 显示最新评论（包括自动生成） |
-| `hitokoto_url` | `str` | `"https://v1.hitokoto.cn/"` | 获取名人名言的 Hitokoto API 地址 |
+| `enable` | `bool` | `True` | 是否启用 ZikeQuote3 |
+| `enable_auto_collect` | `bool` | `True` | 是否启用 LLM 自动收集群聊消息作为语录功能 |
+| `enable_advanced_search` | `bool` | `True` | 是否允许用户使用高级搜索语法查找语录 |
+| `pickup_interval` | `int` | `80` | 自动收集语录的间隔消息条数 |
+| `msg_max_length` | `int` | `35` | 允许被处理为语录的最大消息长度（字符数） |
+| `mapping_max_size` | `int` | `50` | 内存中存储消息ID与语录ID映射关系的最大数量，用于避免重复收集 |
+| `weight_p_transform` | `float` | `1.2` | 语录权重幂变换的参数值越小，权重分布越平滑；值越大，高权重语录被选中的概率越高 |
+| `enable_duplicate` | `bool` | `False` | 是否允许同一个用户提交重复内容的语录 |
+| `max_rank_show` | `int` | `40` | 排行榜命令最多显示的用户数量 |
+| `quote_list_num_perpage` | `int` | `20` | 语录列表命令每页显示的语录数量 |
+| `quote_list_page_limit` | `int` | `4` | 语录列表命令允许显示的最大页数，超出此页数将不再显示之前的页码 |
+| `quote_list_show_comment` | `int` | `1` | 语录列表显示评论的模式<br>0: 不显示评论<br>1: 显示最新一条非自动生成的评论<br>2: 显示最新一条评论（包括自动生成） |
+| `hitokoto_url` | `str` | `"https://v1.hitokoto.cn/"` | 用于获取名人名言的 Hitokoto API 地址 |
 
-### PermissionConfig
-
-| 配置项 | 类型 | 默认值 | 说明 |
-|---|---|---|---|
-| `mode` | `str` | `"white"` | 权限模式，可选值: `"white"` (白名单) 或 `"black"` (黑名单) |
-| `white_list` | `list[int]` | `[]` | 白名单，允许使用插件的群组 ID 列表 |
-| `black_list` | `list[int]` | `[]` | 黑名单，禁止使用插件的群组 ID 列表 |
-
-### PathConfig
+### 权限配置 (PermissionConfig)
 
 | 配置项 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `root` | `Path` | `Path(__file__).parent` | 插件根目录 |
-| `templates` | `Path` | `root / "templates"` | 模板目录 |
-| `prompts` | `Path` | `root / "prompts"` | 提示词目录 |
+| `quote_managers` | `list[int]` | `[2435206827]` | 拥有管理语录权限的用户 ID 列表 |
+| `mode_group` | `str` | `"white"` | 群权限模式，可选值为 'white' (白名单) 或 'black' (黑名单) |
+| `white_group_list` | `list[int]` | `[980606481, 732909252]` | 白名单，允许使用语录功能的群组 ID 列表 |
+| `black_group_list` | `list[int]` | `[]` | 黑名单，禁止使用语录功能的群组 ID 列表 |
+| `mode_user` | `str` | `"black"` | 用户权限模式，可选值为 'white' (白名单) 或 'black' (黑名单) |
+| `white_user_list` | `list[int]` | `[]` | 白名单，允许使用语录功能的用户 ID 列表 |
+| `black_user_list` | `list[int]` | `[]` | 黑名单，禁止使用语录功能的用户 ID 列表 |
+| `default_permission` | `bool` / `str` | `'user'` | 默认权限模式，冲突时使用，'group' 为群权限优先，'user' 为用户权限优先，True 为一律允许，False 为一律禁止 |
+
+### 路径配置 (PathConfig)
+
+| 配置项 | 类型 | 默认值 | 说明 |
+|---|---|---|---|
+| `root` | `Path` | `Path(__file__).parent` | 插件的根目录 |
+| `templates` | `Path` | `Path(__file__).parent / "templates"` | 存储语录模板文件的目录 |
+| `prompts` | `Path` | `Path(__file__).parent / "prompts"` | 存储提示词文件的目录 |
+
+### 旧语录库配置 (OldQuoteConfig)
+
+| 配置项 | 类型 | 默认值 | 说明 |
+|---|---|---|---|
+| `enable` | `bool` | `True` | 是否启用旧语录库功能 |
+| `base_url` | `str` | `"http://artonelicfrequence.icu/"` | 旧语录库 API 的基础 URL |
+| `timeout` | `int` | `5` | 请求旧语录库 API 的超时时间（秒） |
 
 ## 🎉 使用
 
@@ -136,12 +146,24 @@ ZikeQuote3 基于 NoneBot 开发，便于群聊语录自动收集与管理，支
 - `/语录rank [数字]`: 查看语录排行榜，可指定显示前几名。
 - `(reply) /加语录`: 添加语录。
 - `/删语录 语录ID 或 回复消息 /删语录`: 删除语录（需要管理员权限）。
-- `(reply) /评语录 评价内容`: 评论语录。
+- `(reply) /评 评价内容`: 评论语录。
+- `/删评 评论ID`: 删除自己的评论。
 - `/语录 [关键词]`: 随机获取一条语录，可按关键词搜索。
 - `/语录卡 [关键词]`: 生成语录卡片图片，可按关键词搜索。
 - `/语录列表 [用户]`: 查看某个用户的语录列表。
 - `/查语录 关键词`: 搜索包含指定关键词的语录。
 
+
+## 🖼️ 更新日志
+
+#### V0.3.1
+
+1. 修复了初始版本重构引发的大部分 BUG
+2. 添加了语录评论删除功能
+3. 添加了设置项显示（管理员）
+4. 细化了权限控制功能
+5. 规范了配置文件
+6. 命令现在被集中管理
 
 ## 🚧 实现
 

@@ -16,10 +16,11 @@ import json
 import random
 import requests
 
-from .interface.permission import quote_permission
+from .interface.permission import quote_permission, is_quote_manager
+from .utils.async_tools import serial_execution, async_modify_lock
 
 require("html_render")
-from .external.html_render import full_render_html, template
+from .external.html_render import full_render_html, template, full_render_markdown
 
 require("json_data_manager")
 from .external.json_data_manager import ChatHistoryManager, ChatMessageV3, JsonIO

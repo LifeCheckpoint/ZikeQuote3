@@ -3,9 +3,11 @@
 """
 
 from ..imports import *
+from .comand_definition import *
 from ..interface.quote_handle import (
     QuoteInfoV2,
     QuoteV2Comment,
+    get_typed_quote_list,
     add_quote,
     add_comment,
     remove_quote,
@@ -16,8 +18,7 @@ from ..interface.message_handle import (
     get_mapping
 )
 
-update_quote_alias = {"更新语录", "语录更新", "强制更新语录", "强制语录更新"}
-matcher_update_quote = on_command("语录强制更新", aliases=update_quote_alias, priority=10, block=True, permission=quote_permission) # type: ignore
+
 @matcher_update_quote.handle()
 async def f_update_quote(event: GroupME):
     """
@@ -31,8 +32,6 @@ async def f_update_quote(event: GroupME):
         await mfinish(matcher_update_quote, msg_quote_update_failed)
 
 
-add_quote_alias = {"add_quote", "quote_add", "添加语录", "新增语录", "语录添加"}
-matcher_add_quote = on_command("加语录", aliases=add_quote_alias, priority=10, block=True, permission=quote_permission) # type: ignore
 @matcher_add_quote.handle()
 async def f_add_quote(event: GroupME, bot: Bot):
     """
@@ -70,8 +69,6 @@ async def f_add_quote(event: GroupME, bot: Bot):
         pass
 
 
-remove_quote_alias = {"remove_quote", "quote_remove", "删除语录", "语录删除"}
-matcher_remove_quote = on_command("删语录", aliases=remove_quote_alias, priority=10, block=True, permission=quote_permission) # type: ignore
 @matcher_remove_quote.handle()
 async def f_remove_quote(event: GroupME, bot: Bot, arg: Message = CommandArg()):
     """
@@ -82,7 +79,7 @@ async def f_remove_quote(event: GroupME, bot: Bot, arg: Message = CommandArg()):
     2. `/删语录 语录ID`
     """
     # 判断权限
-    if event.sender not in cfg.quote_managers:
+    if is_quote_manager(event.sender.user_id):
         await mfinish(matcher_remove_quote, msg_no_permission, event="删语录")
     
     # 判断 reply
@@ -105,13 +102,11 @@ async def f_remove_quote(event: GroupME, bot: Bot, arg: Message = CommandArg()):
     # 删除语录
     result = remove_quote(event.group_id, quote_id)
     if result:
-        await mfinish(matcher_remove_quote, msg_remove_quote_success, author=get_group_member_cardname(event.group_id, event.sender.user_id or -1, bot))
+        await mfinish(matcher_remove_quote, msg_remove_quote_success)
     else:
         await mfinish(matcher_remove_quote, msg_remove_quote_failed)
 
 
-comment_quote_alias = {"quote_comment", "评论语录", "评价语录", "评"}
-matcher_comment_quote = on_command("评语录", aliases=comment_quote_alias, priority=10, block=True, permission=quote_permission) # type: ignore
 @matcher_comment_quote.handle()
 async def f_comment_quote(event: GroupME, bot: Bot, arg: Message = CommandArg()):
     """
@@ -145,3 +140,40 @@ async def f_comment_quote(event: GroupME, bot: Bot, arg: Message = CommandArg())
         await mfinish(matcher_comment_quote, msg_comment_quote_success)
     else:
         await mfinish(matcher_comment_quote, msg_comment_quote_failed)
+
+
+@matcher_del_comment.handle()
+async def f_del_comment(event: GroupME, bot: Bot, arg: Message = CommandArg()):
+    """
+    删除评论
+
+    语录删除评论方式：
+    `/删评论 评论ID`
+
+    除管理员外，只有评论作者可以删除自己的评论
+    """
+    # 获取评论 ID
+    key = arg.extract_plain_text().strip()
+    if key == "":
+        await mfinish(matcher_del_comment, msg_remove_quote_reply_args_missing)
+        return
+    
+    if not key.isdigit():
+        await mfinish(matcher_del_comment, msg_remove_quote_id_invalid)
+        return
+    
+    # 判断权限
+    if is_quote_manager(event.sender.user_id):
+        filt: Callable[[QuoteInfoV2], bool] = lambda q: any([(comment.comment_id == int(key) and comment.author_id == event.sender.user_id) for comment in q.comments])
+        quotes = get_typed_quote_list(event.group_id, filter=filt)
+
+        if len(quotes) == 0:
+            await mfinish(matcher_del_comment, msg_no_permission, event="删评论")
+            return
+
+    # 删除评论
+    result = remove_quote(event.group_id, int(key))
+    if result:
+        await mfinish(matcher_del_comment, msg_remove_quote_success)
+    else:
+        await mfinish(matcher_del_comment, msg_remove_quote_failed)

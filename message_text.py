@@ -126,7 +126,7 @@ def quote_not_found():
         "没找到符合条件的语录呢~": 1,
     }
 
-def msg_remove_quote_success(author: Optional[str]):
+def msg_remove_quote_success(author: Optional[str] = None):
     """删除语录成功"""
     return {
         f"删除成功！{author} 的语录已经被删除啦~ (ﾉ´ヮ´)ﾉ*:･ﾟ✧": 1,
@@ -214,5 +214,22 @@ def msg_comment_quote_failed(error: Optional[str] = None):
         f"Σ(っ °Д °;)っ 评论失败了... 原因：{reason}": 1,
         f"评论失败了呢... 服务器说：{reason} (╥﹏╥)": 1,
         f"糟糕！评论语录时遇到了问题，问题是...{reason} (⊙_⊙)": 1
+    }
+    return options
+
+def msg_remove_quote_id_invalid():
+    """删除语录 ID 无效"""
+    return {
+        "呜，要输入一个语录 ID 才能删除哦( ¯(∞)¯ )": 1,
+        "要输入一个有效的语录 ID 才能删除哦￣へ￣": 1,
+    }
+
+def msg_quote_setting_showing_failed(error: Optional[str] = None):
+    """语录设置生成失败"""
+    reason = error or "我也不知道..."
+    options = {
+        f"语录设置...没有成功显示呢... 原因：{reason}": 1,
+        f"服务器搞砸啦（＞人＜；）... 服务器说：{reason} (╥﹏╥)": 1,
+        f"语录设置显示时出了点小故障...原因：{reason} (⊙_⊙)": 1
     }
     return options
