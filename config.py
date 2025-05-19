@@ -48,9 +48,9 @@ class Config(BaseModel):
     weight_p_transform: float = Field(default=1.2, description="语录权重幂变换的参数值越小，权重分布越平滑；值越大，高权重语录被选中的概率越高")
     enable_duplicate: bool = Field(default=False, description="是否允许同一个用户提交重复内容的语录")
     max_rank_show: int = Field(default=40, description="排行榜命令最多显示的用户数量")
-    quote_List_num_perpage: int = Field(default=20, description="语录列表命令每页显示的语录数量")
-    quote_List_page_limit: int = Field(default=4, description="语录列表命令允许显示的最大页数，超出此页数将不再显示之前的页码")
-    quote_List_show_comment: int = Field(default=1, description="语录列表显示评论的模式\n0: 不显示评论；1: 显示最新一条非自动生成的评论；2: 显示最新一条评论（包括自动生成）")
+    quote_list_num_perpage: int = Field(default=20, description="语录列表命令每页显示的语录数量")
+    quote_list_page_limit: int = Field(default=4, description="语录列表命令允许显示的最大页数，超出此页数将不再显示之前的页码")
+    quote_list_show_comment: int = Field(default=1, description="语录列表显示评论的模式\n0: 不显示评论；1: 显示最新一条非自动生成的评论；2: 显示最新一条评论（包括自动生成）")
     hitokoto_url: str = Field(default="https://v1.hitokoto.cn/", description="用于获取名人名言的 Hitokoto API 地址")
 
     path: PathConfig = Field(default_factory=PathConfig, description="路径配置")
