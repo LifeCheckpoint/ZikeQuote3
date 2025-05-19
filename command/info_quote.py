@@ -1,4 +1,5 @@
 from ..imports import *
+from .comand_definition import *
 from ..utils.formating import format_pydantic_config_markdown
 from ..interface.message_handle import (
     pick_received_msg,
@@ -7,7 +8,6 @@ from ..interface.message_handle import (
 from ..interface.quote_handle import get_quote_rank
 
 
-matcher_listener = on_message(priority=15, block=False, permission=quote_permission)
 @matcher_listener.handle()
 async def f_listener(event: GroupME, bot: Bot):
     """
@@ -21,8 +21,6 @@ async def f_listener(event: GroupME, bot: Bot):
         print("自动语录收集失败，可能需要检查相关配置")
 
 
-rank_alias = {"语录排行", "quote_rank", "语录信息", "quote_info"}
-matcher_rank = on_command("语录rank", aliases=rank_alias, priority=10, block=True, permission=quote_permission) # type: ignore
 @matcher_rank.handle()
 async def f_rank(event: GroupME, arg: Message = CommandArg()):
     """
@@ -46,8 +44,6 @@ async def f_rank(event: GroupME, arg: Message = CommandArg()):
     await matcher_rank.finish(MsgSeg.image(image_data))
 
 
-setting_showing_alias = {"语录设置信息", "quote_setting", "语录配置", "quote_config", "查看语录设置", "查看语录配置"}
-matcher_setting_showing = on_command("语录设置", aliases=setting_showing_alias, priority=10, block=True, permission=quote_permission) # type: ignore
 @matcher_setting_showing.handle()
 async def f_setting_showing(event: GroupME):
     """

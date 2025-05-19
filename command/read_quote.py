@@ -3,6 +3,7 @@
 """
 
 from ..imports import *
+from .comand_definition import *
 from ..interface.message_handle import (
     add_mapping,
 )
@@ -15,8 +16,6 @@ from ..interface.quote_handle import (
 from ..utils.hitokoto import get_hitokoto
 
 
-random_quote_alias = {"quote", "随机语录"}
-matcher_random_quote = on_command("语录", aliases=random_quote_alias, priority=10, block=True, permission=quote_permission) # type: ignore
 @matcher_random_quote.handle()
 async def f_random_quote(event: GroupME, bot: Bot, arg: Message = CommandArg()):
     """
@@ -36,8 +35,6 @@ async def f_random_quote(event: GroupME, bot: Bot, arg: Message = CommandArg()):
         add_mapping(event.group_id, send_msg["message_id"], result.quote_id)
 
 
-quote_card_alias = {"语录图", "quote_card", "语录card", "语录图片"}
-matcher_quote_card = on_command("语录卡", aliases=quote_card_alias, priority=10, block=True, permission=quote_permission) # type: ignore
 @matcher_quote_card.handle()
 async def f_quote_card(event: GroupME, arg: Message = CommandArg()):
     """
@@ -63,8 +60,6 @@ async def f_quote_card(event: GroupME, arg: Message = CommandArg()):
             await mfinish(matcher_quote_card, msg_quote_card_failed, error=str(e))
 
 
-quote_list_alias = {"语录list", "语录列表", "quote_list", "列语录"}
-matcher_quote_list = on_command("语录列表", aliases=quote_list_alias, priority=10, block=True, permission=quote_permission) # type: ignore
 @matcher_quote_list.handle()
 async def f_quote_list(event: GroupME, arg: Message = CommandArg()):
     """
@@ -110,8 +105,6 @@ async def f_quote_list(event: GroupME, arg: Message = CommandArg()):
         await mfinish(matcher_quote_list, msg_quote_list_generate_failed, error=str(e))
 
 
-quote_search_alias = {"quote_search", "语录搜索", "语录查找", "搜语录", "找语录"}
-matcher_quote_search = on_command("查语录", aliases=quote_search_alias, priority=10, block=True, permission=quote_permission) # type: ignore
 @matcher_quote_search.handle()
 async def f_quote_search(event: GroupME, arg: Message = CommandArg()):
     """
