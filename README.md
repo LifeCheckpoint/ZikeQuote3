@@ -80,12 +80,12 @@ ZikeQuote3 基于 NoneBot2 开发，便于群聊语录自动收集与管理，�
     plugins = ["nonebot-plugin-zikequote3"]
     ```
 
-2. 确保系统安装 Node.js，安装截图相关后端及其依赖。
+2. 确保系统安装 Node.js，可选进入插件后自动安装前端依赖，或者手动安装截图相关后端及其依赖：
     ```bash
     cd your/bot/plugins/external/html_render/
     npm install
     ```
-3. 在 `utils/api_key` 配置 OpenAI API Key，或自行修改 `utils/llm_solo.py` 使用自定义模型与参数
+3. 在 `utils/api_key` 配置 API Key，或自行修改 `utils/llm_solo.py` 使用自定义客户端、模型与参数
 4. 在 `config.py` 进行插件相关配置，详见“⚙ 配置”
 
 ## ⚙ 配置
@@ -96,9 +96,10 @@ ZikeQuote3 基于 NoneBot2 开发，便于群聊语录自动收集与管理，�
 
 | 配置项 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
-| `enable` | `bool` | `True` | 是否启用 ZikeQuote3 |
+| `enable` | `bool` | `True` | 是否启用该语录插件 |
 | `enable_auto_collect` | `bool` | `True` | 是否启用 LLM 自动收集群聊消息作为语录功能 |
 | `enable_advanced_search` | `bool` | `True` | 是否允许用户使用高级搜索语法查找语录 |
+| `check_frontend` | `bool` | `True` | 自动检查并安装前端 Node.js 依赖（若未安装），配置为 False 则忽略检查，如果前端依赖未安装则无法使用包含图像生成的命令 |
 | `pickup_interval` | `int` | `80` | 自动收集语录的间隔消息条数 |
 | `msg_max_length` | `int` | `35` | 允许被处理为语录的最大消息长度（字符数） |
 | `mapping_max_size` | `int` | `50` | 内存中存储消息ID与语录ID映射关系的最大数量，用于避免重复收集 |
@@ -147,6 +148,11 @@ ZikeQuote3 基于 NoneBot2 开发，便于群聊语录自动收集与管理，�
 
 
 ## 🖼️ 更新日志
+
+#### V0.3.2.beta1
+
+1. 更新了自动依赖安装
+2. LLM 相关检查更加健全
 
 #### V0.3.1
 
