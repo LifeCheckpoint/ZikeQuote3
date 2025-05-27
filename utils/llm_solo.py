@@ -9,9 +9,17 @@ def get_openai_client(model_name: str) -> AsyncOpenAI:
     """
     获取 OpenAI 客户端实例
     """
+    key_file = Path(__file__).parent / "api_key"
+
+    if not key_file.exists():
+        logger.warning(f"API 密钥文件 {key_file} 不存在，请创建并填入 API 密钥")
+        key = None
+    else:
+        key = key_file.read_text().strip()
+
     return AsyncOpenAI(
-        base_url="",
-        api_key=(Path(__file__).parent / "api_key").read_text().strip(),
+        base_url=cfg.llm_base_url,
+        api_key=key,
     )
 
 async def llm_solo(content: str, attempt_num: int = 3) -> Optional[str]:

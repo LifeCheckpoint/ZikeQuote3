@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Union, Optional
 from pathlib import Path
 from pydantic import BaseModel, Field
 
@@ -33,6 +33,8 @@ class Config(BaseModel):
     enable: bool = Field(default=True, description="是否启用 ZikeQuote3")
     enable_auto_collect: bool = Field(default=True, description="是否启用 LLM 自动收集群聊消息作为语录功能")
     enable_advanced_search: bool = Field(default=True, description="是否允许用户使用高级搜索语法查找语录")
+
+    check_frontend: bool = Field(default=True, description="自动检查并安装前端 Node.js 依赖（若未安装），配置为 False 则忽略检查，如果前端依赖未安装则无法使用包含图像生成的命令")
     
     pickup_interval: int = Field(default=80, description="自动收集语录的间隔消息条数")
     msg_max_length: int = Field(default=35, description="允许被处理为语录的最大消息长度（字符数）")
@@ -44,6 +46,7 @@ class Config(BaseModel):
     quote_list_page_limit: int = Field(default=4, description="语录列表命令允许显示的最大页数，超出此页数将不再显示之前的页码")
     quote_list_show_comment: int = Field(default=1, description="语录列表显示评论的模式\n0: 不显示评论；1: 显示最新一条非自动生成的评论；2: 显示最新一条评论（包括自动生成）")
     hitokoto_url: str = Field(default="https://v1.hitokoto.cn/", description="用于获取名人名言的 Hitokoto API 地址")
+    llm_base_url: Optional[str] = Field(default=None, description="LLM API 的基础 URL，填写后可在 `llm_solo` 进行适配更改")
 
     path: PathConfig = Field(default_factory=PathConfig, description="路径配置")
     permission: PermissionConfig = Field(default_factory=PermissionConfig, description="权限配置")
