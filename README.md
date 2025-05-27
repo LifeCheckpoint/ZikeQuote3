@@ -31,14 +31,14 @@ ZikeQuote3 基于 NoneBot2 开发，便于群聊语录自动收集与管理，�
 
 ## 🔧 安装
 
-1. 确保您已经安装了 NoneBot2，然后安装插件本体（目前暂时仅支持手动安装）
+1. 确保您已经安装了 NoneBot2，然后安装插件本体
     <details close>
     <summary>手动安装</summary>
     下载该仓库后，进入命令行并使用
 
         poetry install
     
-    以安装 `pyproject.toml` 依赖
+    以安装 `pyproject.toml` 中的依赖
     </details>
 
     <details close>
@@ -80,12 +80,12 @@ ZikeQuote3 基于 NoneBot2 开发，便于群聊语录自动收集与管理，�
     plugins = ["nonebot-plugin-zikequote3"]
     ```
 
-2. 确保系统安装 Node.js，可选进入插件后自动安装前端依赖，或者手动安装截图相关后端及其依赖：
+2. **确保系统安装 Node.js**，首次进入插件**默认自动安装前端依赖**，或者手动安装截图相关后端及其依赖：
     ```bash
     cd your/bot/plugins/external/html_render/
     npm install
     ```
-3. 在 `utils/api_key` 配置 API Key，或自行修改 `utils/llm_solo.py` 使用自定义客户端、模型与参数
+3. 创建文件 `utils/api_key` 配置 LLM API Key，可自行修改 `utils/llm_solo.py` 使用自定义客户端、模型与参数
 4. 在 `config.py` 进行插件相关配置，详见“⚙ 配置”
 
 ## ⚙ 配置
