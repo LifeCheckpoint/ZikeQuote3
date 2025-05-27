@@ -7,7 +7,7 @@ frontend_dir = Path(__file__).parent.parent / "external" / "html_render"
 def check_npm_command() -> bool:
     """检查 npm 命令是否存在"""
     try:
-        subprocess.run(['npm', '--version'], check=True, capture_output=True)
+        subprocess.run(['npm', '--version'], check=True, capture_output=True, shell=True)
         return True
     except FileNotFoundError:
         return False
@@ -16,7 +16,7 @@ def check_npm_command() -> bool:
 
 
 def verify_installation(directory: Path = frontend_dir) -> bool:
-    """验证 npm 依赖是否安装成功 (简单检查 node_modules 目录)"""
+    """检查 node_modules 目录确认依赖是否安装成功"""
     return (directory / "node_modules").is_dir()
 
 
@@ -38,7 +38,7 @@ def install_frontend_dependencies() -> bool:
         return True
 
     try:
-        subprocess.run(['npm', 'install'], check=True, cwd=frontend_dir)
+        subprocess.run(['npm', 'install'], check=True, cwd=frontend_dir, shell=True)
         if verify_installation(frontend_dir):
             logger.info("Node.js 依赖安装成功。")
             return True

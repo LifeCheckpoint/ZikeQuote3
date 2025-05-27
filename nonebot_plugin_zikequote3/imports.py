@@ -17,15 +17,9 @@ import requests
 
 from .interface.permission import quote_permission, is_quote_manager
 from .utils.async_tools import serial_execution, async_modify_lock
-
-require("html_render")
 from .external.html_render import full_render_html, template, full_render_markdown
-
-require("json_data_manager")
 from .external.json_data_manager import ChatHistoryManager, ChatMessageV3, JsonIO
 from .external.json_data_manager.utils import get_json_ver_info, set_json_ver_info
-
-require("msg_text")
 from .external.msg_text import msend, mfinish
 
 from .config import Config

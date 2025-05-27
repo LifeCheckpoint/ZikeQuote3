@@ -1,0 +1,13 @@
+recursive-include * *
+
+prune nonebot_plugin_zikequote3\external\html_render\node_modules
+prune dist
+prune nonebot_plugin_zikequote3.egg-info
+prune .pytest_cache
+prune .venv
+prune .github
+prune .vscode
+
+recursive-exclude * *.pyc
+recursive-exclude * api_key
+recursive-exclude * .gitignore
