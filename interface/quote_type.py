@@ -168,11 +168,11 @@ class QuoteManager:
         """
         if not quotes:
             self.quote_list = []
-
-        if isinstance(quotes[0], QuoteInfoV2):
-            self.quote_list: List = [asdict(quote) for quote in quotes] # type: ignore
-        elif isinstance(quotes[0], dict):
-            self.quote_list: List = quotes
+        else:
+            if isinstance(quotes[0], QuoteInfoV2):
+                self.quote_list: List = [asdict(quote) for quote in quotes] # type: ignore
+            elif isinstance(quotes[0], dict):
+                self.quote_list: List = quotes
 
     def load_from_file(self):
         """从文件加载语录"""

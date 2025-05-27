@@ -24,7 +24,7 @@ class PermissionConfig(BaseModel):
     white_user_list: List[int] = Field(default=[], description="白名单，允许使用语录功能的用户 ID 列表")
     black_user_list: List[int] = Field(default=[], description="黑名单，禁止使用语录功能的用户 ID 列表")
 
-    default_permission: Union[bool, str] = Field(default='user', description="默认权限模式，冲突时使用，'group' 为群权限优先，'user' 为用户权限优先，True 为一律允许，False 为一律禁止")
+    default_permission: Union[bool, str] = Field(default=False, description="默认权限模式，冲突时使用，'group' 为群权限优先，'user' 为用户权限优先，True 为一律允许，False 为一律禁止")
 
 class PathConfig(BaseModel):
     """

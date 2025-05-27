@@ -79,7 +79,7 @@ async def f_remove_quote(event: GroupME, bot: Bot, arg: Message = CommandArg()):
     2. `/删语录 语录ID`
     """
     # 判断权限
-    if is_quote_manager(event.sender.user_id):
+    if not is_quote_manager(event.sender.user_id):
         await mfinish(matcher_remove_quote, msg_no_permission, event="删语录")
     
     # 判断 reply
