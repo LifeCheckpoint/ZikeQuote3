@@ -11,11 +11,5 @@ __pycache__/
 *.mypy_cache
 *.pytest_cache
 
-# node_modules
-node_modules/
-
-# api_key
-utils/api_key
-
 # vscode
 .vscode/
