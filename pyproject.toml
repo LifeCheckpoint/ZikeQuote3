@@ -21,7 +21,7 @@ readme = "README.md"
 license = "MIT"
 
 [project.urls]
-Homepage = "https://github.com/LifeCheckpoint/ZikeQuote3"
+Homepage = "https://github.com/LifeCheckpoint/nonebot_plugin_zikequote3"
 
 [tool.nonebot]
 plugins = ["ZikeQuote3"]
