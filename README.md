@@ -100,14 +100,14 @@ ZikeQuote3 基于 NoneBot2 开发，便于群聊语录自动收集与管理，�
 | `enable_auto_collect` | `bool` | `True` | 是否启用 LLM 自动收集群聊消息作为语录功能 |
 | `enable_advanced_search` | `bool` | `True` | 是否允许用户使用高级搜索语法查找语录 |
 | `check_frontend` | `bool` | `True` | 自动检查并安装前端 Node.js 依赖（若未安装），配置为 False 则忽略检查，如果前端依赖未安装则无法使用包含图像生成的命令 |
-| `pickup_interval` | `int` | `80` | 自动收集语录的间隔消息条数 |
-| `msg_max_length` | `int` | `35` | 允许被处理为语录的最大消息长度（字符数） |
-| `mapping_max_size` | `int` | `50` | 内存中存储消息ID与语录ID映射关系的最大数量，用于避免重复收集 |
-| `weight_p_transform` | `float` | `1.2` | 语录权重幂变换的参数值越小，权重分布越平滑；值越大，高权重语录被选中的概率越高 |
+| `pickup_interval` | `int` | `80` | 自动收集语录的间隔消息条数，必须大于10 |
+| `msg_max_length` | `int` | `35` | 允许被处理为语录的最大消息长度（字符数），必须大于0 |
+| `mapping_max_size` | `int` | `50` | 内存中存储消息ID与语录ID映射关系的最大数量，用于避免重复收集，必须大于等于1 |
+| `weight_p_transform` | `float` | `1.2` | 语录权重幂变换的参数值越小，权重分布越平滑；值越大，高权重语录被选中的概率越高，必须大于等于0且小于10 |
 | `enable_duplicate` | `bool` | `False` | 是否允许同一个用户提交重复内容的语录 |
-| `max_rank_show` | `int` | `40` | 排行榜命令最多显示的用户数量 |
-| `quote_list_num_perpage` | `int` | `20` | 语录列表命令每页显示的语录数量 |
-| `quote_list_page_limit` | `int` | `4` | 语录列表命令允许显示的最大页数，超出此页数将不再显示之前的页码 |
+| `max_rank_show` | `int` | `40` | 排行榜命令最多显示的用户数量，必须大于等于1 |
+| `quote_list_num_perpage` | `int` | `20` | 语录列表命令每页显示的语录数量，必须大于等于1 |
+| `quote_list_page_limit` | `int` | `4` | 语录列表命令允许显示的最大页数，超出此页数将不再显示之前的页码，必须大于等于1 |
 | `quote_list_show_comment` | `int` | `1` | 语录列表显示评论的模式<br>0: 不显示评论<br>1: 显示最新一条非自动生成的评论<br>2: 显示最新一条评论（包括自动生成） |
 | `hitokoto_url` | `str` | `"https://v1.hitokoto.cn/"` | 用于获取名人名言的 Hitokoto API 地址 |
 
@@ -116,13 +116,13 @@ ZikeQuote3 基于 NoneBot2 开发，便于群聊语录自动收集与管理，�
 | 配置项 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
 | `quote_managers` | `list[int]` | `[2435206827]` | 拥有管理语录权限的用户 ID 列表 |
-| `mode_group` | `str` | `"white"` | 群权限模式，可选值为 'white' (白名单) 或 'black' (黑名单) |
+| `mode_group` | `Literal["black", "white"]` | `"white"` | 群权限模式，可选值为 'white' (白名单) 或 'black' (黑名单) |
 | `white_group_list` | `list[int]` | `[980606481, 732909252]` | 白名单，允许使用语录功能的群组 ID 列表 |
 | `black_group_list` | `list[int]` | `[]` | 黑名单，禁止使用语录功能的群组 ID 列表 |
-| `mode_user` | `str` | `"black"` | 用户权限模式，可选值为 'white' (白名单) 或 'black' (黑名单) |
+| `mode_user` | `Literal["black", "white"]` | `"black"` | 用户权限模式，可选值为 'white' (白名单) 或 'black' (黑名单) |
 | `white_user_list` | `list[int]` | `[]` | 白名单，允许使用语录功能的用户 ID 列表 |
 | `black_user_list` | `list[int]` | `[]` | 黑名单，禁止使用语录功能的用户 ID 列表 |
-| `default_permission` | `bool` / `str` | `'user'` | 默认权限模式，冲突时使用，'group' 为群权限优先，'user' 为用户权限优先，True 为一律允许，False 为一律禁止 |
+| `default_permission` | `Optional[bool, Literal["user", "group"]]` | `'user'` | 默认权限模式，冲突时使用，'group' 为群权限优先，'user' 为用户权限优先，True 为一律允许，False 为一律禁止 |
 
 ### 路径配置 (PathConfig)
 
@@ -154,6 +154,7 @@ ZikeQuote3 基于 NoneBot2 开发，便于群聊语录自动收集与管理，�
 1. 更新了自动依赖安装
 2. LLM 相关检查更加健全
 3. 更新了项目包结构
+4. 新增配置项验证
 
 #### V0.3.1
 
