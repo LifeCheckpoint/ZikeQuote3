@@ -18,7 +18,7 @@ dependencies = [
 ]
 requires-python = ">=3.12"
 readme = "README.md"
-license = { text="MIT" }
+license = "MIT"
 
 [project.urls]
 Homepage = "https://github.com/LifeCheckpoint/ZikeQuote3"
